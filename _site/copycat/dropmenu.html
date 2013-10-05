@@ -1,0 +1,88 @@
+<html>
+  <head>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-2.0.3.js"></script>
+    <style>
+      /* box-shadow: x-offset y-offset radius color */
+      #dropmenu {
+        border:1px solid #ccc;
+        box-shadow: 0px 0px 5px #888888;
+        border-bottom-right-radius: 5px;
+        border-bottom-left-radius: 5px;
+        width: 150px;
+        height: 350px;
+        padding: 10px;
+      }
+
+      #dropmenu ul {
+        padding-left: 10px;
+        list-style-type: none;
+      }
+
+      #dropmenu ul li {
+        margin:0 20px 20px 0; 
+        vertical-align:top;
+        
+      }
+      
+      #dropmenu ul li a:hover {
+        color: orange;
+        font-weight: bold;
+      }
+
+      /* attempt at CSS3 animations */
+      .dropmenu-item {
+        position: absolute;
+        display:none;
+        width:150px;
+        height:350px;
+        border-bottom-right-radius: 5px;
+        border-bottom-left-radius: 5px;
+        transition: width ease-in 1s, box-shadow .2s linear;
+      }
+
+      .dropmenu-item:hover {
+        display: block;
+        width:400px;
+        box-shadow: 0px 0px 10px #888888;
+      }
+
+      #tophat {
+        border-top-right-radius: 5px;
+        border-top-left-radius: 5px;
+        height: 40px;
+        width: 80px;
+        padding: 10px;
+        background-color: #111;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="tophat">
+      <span>Big Header Text</span>
+    </div>
+    <div id="dropmenu" data-button="main">
+      <div id="dm1box" class="dropmenu-item"></div>
+      <div id="dm2box" class="dropmenu-item"></div>
+      <div id="dm3box" class="dropmenu-item"></div>
+      <ul>
+        <li><a id="dm1" data-link="menuitem">Item 1</a></li>
+        <li><a id="dm2" data-link="menuitem">Item 2</a></li>
+        <li><a id="dm3" data-link="menuitem">Item 3</a></li>
+      </ul>
+    </div>
+    <script type="text/javascript">
+      // using data-* fields in javascript
+      $(function() {
+        console.log("READY!");
+        console.log($("a[data-link]").length);
+        $("a[data-link]").each(function() {
+          console.log($(this).data("link"));
+          $(this).append(" " + $(this).data("link"));
+        });
+
+        //$("")
+      });
+    </script>      
+  </body>
+</html>
