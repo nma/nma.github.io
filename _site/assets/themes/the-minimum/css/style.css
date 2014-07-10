@@ -319,7 +319,7 @@ pre code {
 .unit-article ul,
 .unit-article ol,
 .unit-article dl {
-  /*padding-left: 0;*/
+  padding-left: 0;
 }
 .unit-article ul {
   list-style: square;
