@@ -7,10 +7,10 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<title></title>
+	<title>Testing Custom Linux Kernels on Vagrant.</title>
 	<meta name="author" content="Nick Ma">
 	<link href='/assets/themes/the-minimum/css/style.css' rel="stylesheet" media="all">
-	<link href="http://feeds.feedburner.com/" rel="alternate" title="" type="application/atom+xml">
+	<link href="http://feeds.feedburner.com/" rel="alternate" title="Testing Custom Linux Kernels on Vagrant." type="application/atom+xml">
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script>
 </head>
 <body>
@@ -87,23 +87,26 @@
 			<div class="unit-inner unit-body-inner">
 				<div class="entry-content">
 					
-<article class="unit-article layout-page">
+<article class="unit-article layout-post">
 	<div class="unit-inner unit-article-inner">
 		<div class="content">
 			<header>
 				<div class="unit-head">
 					<div class="unit-inner unit-head-inner">
-						<h1 class="h2 entry-title"></h1>
+						<h1 class="h2 entry-title">Testing Custom Linux Kernels on Vagrant.</h1>
 					</div><!-- unit-inner -->
 				</div><!-- unit-head -->
 			</header>
 
 			<div class="bd">
 				<div class="entry-content">
-					<div class='row'>
-    <div class='span12'>
-        <h1><a href='/blog/2014/07/19/testing-custom-linux-kernels-on-vagrant'>Testing Custom Linux Kernels on Vagrant.</a></h1>
-        <p>A friend was building a custom Ubuntu kernel and after installing the new kernel on the machine the login page refused to work.</p>
+          <div class="social">
+            <ul class="list-linear">
+              <li><div class="twitter-tweet"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="NickMa38" data-lang="en">Tweet</a></div></li>
+              <li><div class="twitter-follow"><a href="https://twitter.com/NickMa38" class="twitter-follow-button" data-show-count="false" data-lang="en"></a></div></li>
+            </ul>
+          </div>
+					<p>A friend was building a custom Ubuntu kernel and after installing the new kernel on the machine the login page refused to work.</p>
 
 <p>After reading about vagrant and working with virtual machines, I felt that testing major OS changes will definitely be beneficial on a virtual machine. So this blog post details my attempt (vain or not) at making a easily rebootable Vagrant environment to test potentially OS breaking changes to the kernel with out having to constantly re-install the OS on a physical machine.</p>
 
@@ -264,11 +267,11 @@ make menuconfig
       [*] Sleep inside atomic section checking
       [*] Locking API boot-time self-tests
 </code></pre></div>
-<p><img alt='Config Page' src='https://s3-us-west-2.amazonaws.com/nickma.com/Kernelconfig-2014-07-19+at+12.42.42+PM.png' /></p>
+<p><img src="https://s3-us-west-2.amazonaws.com/nickma.com/Kernelconfig-2014-07-19+at+12.42.42+PM.png" alt="Config Page" /></p>
 
-<p><img alt='Preempt RT Flag' src='https://s3-us-west-2.amazonaws.com/nickma.com/Screen+Shot+2014-07-19+at+1.05.54+PM.png' /></p>
+<p><img src="https://s3-us-west-2.amazonaws.com/nickma.com/Screen+Shot+2014-07-19+at+1.05.54+PM.png" alt="Preempt RT Flag" /></p>
 
-<p>A note from <a href='https://www.osadl.org/Realtime-Preempt-Kernel.kernel-rt.0.html#ubuntu'>www.osadl.com</a>: Should you happen to be the proud owner of a multi-core processor, be sure to specify the -j <code>&lt;jobs</code>&gt; option of make where <code>&lt;jobs</code>&gt; is twice the number of cores your processor has, as this will speed up kernel compilation considerably.</p>
+<p>A note from <a href="https://www.osadl.org/Realtime-Preempt-Kernel.kernel-rt.0.html#ubuntu">www.osadl.com</a>: Should you happen to be the proud owner of a multi-core processor, be sure to specify the -j <code>&lt;jobs</code>&gt; option of make where <code>&lt;jobs</code>&gt; is twice the number of cores your processor has, as this will speed up kernel compilation considerably.</p>
 <div class='highlight'><pre><code class='bash'><span class='c'># takes a while to build the things, good time to coffee break</span>
 <span class='c'># add the -j if you know how many cores you have.</span>
 sudo make
@@ -278,24 +281,94 @@ make modules_install install
 </code></pre></div>
 <p>At this point you should be able to test out the kernel, perhaps in a later post if I find the bandwidth.</p>
 
-<h3 id='alternative'>Alternative</h3>
+<h3 id="alternative">Alternative</h3>
 
-<p>Near the end of my research I found out that ubuntu has its own linux-realtime that can be apt-get installed, though only for certain versions, you may end up on an older version of the kernel. This is a far simpler solution on <a href='https://wiki.ubuntu.com/RealTime'>ubuntu/RealTime</a>.</p>
+<p>Near the end of my research I found out that ubuntu has its own linux-realtime that can be apt-get installed, though only for certain versions, you may end up on an older version of the kernel. This is a far simpler solution on <a href="https://wiki.ubuntu.com/RealTime">ubuntu/RealTime</a>.</p>
 
 <p>If you want to try this method, its easy! Since we are on a virtual machine, just kill it off with vagrant destroy and rebuild it with the correct base box. Just replace the provisioning script with the procedures on link above.</p>
-    </div>
-  </div><h3>Recent Posts</h3><ul class='posts'>
-  
-    <li><span>19 Jul 2014</span> &raquo; <a href='/blog/2014/07/19/testing-custom-linux-kernels-on-vagrant'>Testing Custom Linux Kernels on Vagrant.</a></li>
-  
-    <li><span>02 Jul 2014</span> &raquo; <a href='/tutorial/2014/07/02/wordpress-on-dokku-with-vagrant-devo'>Wordpress on Dokku with Vagrant Devo.</a></li>
-  
-</ul>
-				</div><!-- entry-content -->
-			</div><!-- bd -->
+					<div class="meta">
+						<p class="date-publish">
+							Published: 
+							<date class="date-pub" title="2014-07-19T00:00:00-07:00" datetime="2014-07-19T00:00:00-07:00" pubdate>
+							<span class="month"><abbr>July</abbr></span>
+							<span class="day">19</span>
+							<span class="year">2014</span>
+							</date>
+						</p>
+						<ul class="list-category list-linear">
+							<li class="list-head">category: </li>
+							
+							
 
+
+  
+     
+    	<li><a href="/categories.html#blog-ref">
+    		blog <span>1</span>
+    	</a></li>
+    
+  
+
+
+						</ul>
+						<ul class="list-tag list-linear">
+							<li class="list-head">tags: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/tags.html#Vagrant-ref">Vagrant <span>2</span></a></li>
+     
+    	<li><a href="/tags.html#Ubuntu Kernel-ref">Ubuntu Kernel <span>1</span></a></li>
+    
+  
+
+
+
+						</ul>
+					</div><!-- meta -->
+				</div><!-- entry-content -->
+
+				<div class="misc-content">	
+					
+
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_developer = 1;
+    var disqus_shortname = 'nickmablog'; // required: replace example with your forum shortname
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+				</div><!-- misc-content -->
+				
+			</div><!-- bd -->
 			<footer class="unit-foot">
 				<div class="unit-inner unit-foot-inner">
+					<nav class="pagination">
+						<ul>
+							
+							<li class="prev"><a class="internal" rel="prev"  href="/tutorial/2014/07/02/wordpress-on-dokku-with-vagrant-devo" title="View Wordpress on Dokku with Vagrant Devo.">&laquo; Wordpress on Dokku with Vagrant Devo.</a></li>
+							
+
+							
+
+							
+						</ul>
+					</nav>
 					<p class="gotop">
 						<a href="#page">Back to Top</a>
 					</p>
@@ -340,7 +413,7 @@ make modules_install install
 		};
 	load('//platform.twitter.com/widgets.js', 'tweetjs');
 	// load('https://apis.google.com/js/plusone.js', 'gplus1js'); // Checkout http://j.mp/ApDgMr for usage html for this is <div class="g-plusone" data-size="medium"></div>
-	// load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/index.html" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
+	// load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/blog/2014/07/19/testing-custom-linux-kernels-on-vagrant" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
 
     var images = document.getElementsByTagName('img');
     var myImge = null;

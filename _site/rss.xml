@@ -5,10 +5,197 @@
         <description>Nick Ma's Blog - Nick Ma</description>
         <link>http://www.nickma.com</link>
         <link>http://www.nickma.com</link>
-        <lastBuildDate>2014-07-10T16:08:48-04:00</lastBuildDate>
-        <pubDate>2014-07-10T16:08:48-04:00</pubDate>
+        <lastBuildDate>2014-07-19T15:07:15-07:00</lastBuildDate>
+        <pubDate>2014-07-19T15:07:15-07:00</pubDate>
         <ttl>1800</ttl>
 
+
+        <item>
+                <title>Testing Custom Linux Kernels on Vagrant.</title>
+                <description>&lt;p&gt;A friend was building a custom Ubuntu kernel and after installing the new kernel on the machine the login page refused to work.&lt;/p&gt;
+
+&lt;p&gt;After reading about vagrant and working with virtual machines, I felt that testing major OS changes will definitely be beneficial on a virtual machine. So this blog post details my attempt (vain or not) at making a easily rebootable Vagrant environment to test potentially OS breaking changes to the kernel with out having to constantly re-install the OS on a physical machine.&lt;/p&gt;
+
+&lt;p&gt;The first step will be to setup a default box for Vagrant to work. Since I had previously downloaded a trusty32-amd machine, I will stick with that for my base box.&lt;/p&gt;
+
+&lt;p&gt;Define our Vagrantfile in the project directory should look like this.&lt;/p&gt;
+
+&lt;p&gt;VagrantFile&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;&lt;span class='c1'&gt;# -*- mode: ruby -*-&lt;/span&gt;
+&lt;span class='c1'&gt;# vi: set ft=ruby :&lt;/span&gt;
+
+&lt;span class='c1'&gt;# Vagrantfile API/syntax version. Don&amp;#39;t touch unless you know what you&amp;#39;re doing!&lt;/span&gt;
+&lt;span class='no'&gt;VAGRANTFILE_API_VERSION&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;2&amp;quot;&lt;/span&gt;
+&lt;span class='no'&gt;BOX_NAME&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;BOX_NAME&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;trusty32-amd&amp;quot;&lt;/span&gt;
+&lt;span class='no'&gt;BOX_URI&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;BOX_URI&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box&amp;quot;&lt;/span&gt; 
+&lt;span class='no'&gt;BOX_MEMORY&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;BOX_MEMORY&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='mi'&gt;512&lt;/span&gt;
+&lt;span class='no'&gt;BOX_HOST&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;BOX_HOST&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;preempt-rt&amp;quot;&lt;/span&gt;
+
+&lt;span class='no'&gt;Vagrant&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;configure&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='no'&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt; &lt;span class='k'&gt;do&lt;/span&gt; &lt;span class='o'&gt;|&lt;/span&gt;&lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;|&lt;/span&gt;
+  &lt;span class='c1'&gt;# All Vagrant configuration is done here. The most common configuration&lt;/span&gt;
+  &lt;span class='c1'&gt;# options are documented and commented below. For a complete reference,&lt;/span&gt;
+  &lt;span class='c1'&gt;# please see the online documentation at vagrantup.com.&lt;/span&gt;
+
+  &lt;span class='c1'&gt;# Every Vagrant virtual environment requires a box to build off of.&lt;/span&gt;
+  &lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;vm&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;box&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;BOX_NAME&lt;/span&gt;
+  &lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;vm&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;box_url&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;BOX_URI&lt;/span&gt;
+
+  &lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;vm&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;host_name&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;BOX_HOST&lt;/span&gt;
+
+  &lt;span class='c1'&gt;# Disable automatic box update checking. If you disable this, then&lt;/span&gt;
+  &lt;span class='c1'&gt;# boxes will only be checked for updates when the user runs&lt;/span&gt;
+  &lt;span class='c1'&gt;# `vagrant box outdated`. This is not recommended.&lt;/span&gt;
+  &lt;span class='c1'&gt;# config.vm.box_check_update = false&lt;/span&gt;
+
+  &lt;span class='c1'&gt;# Create a forwarded port mapping which allows access to a specific port&lt;/span&gt;
+  &lt;span class='c1'&gt;# within the machine from a port on the host machine. In the example below,&lt;/span&gt;
+  &lt;span class='c1'&gt;# accessing &amp;quot;localhost:8080&amp;quot; will access port 80 on the guest machine.&lt;/span&gt;
+  &lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;vm&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;network&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;forwarded_port&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='ss'&gt;guest&lt;/span&gt;&lt;span class='p'&gt;:&lt;/span&gt; &lt;span class='mi'&gt;80&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='ss'&gt;host&lt;/span&gt;&lt;span class='p'&gt;:&lt;/span&gt; &lt;span class='mi'&gt;8080&lt;/span&gt;
+
+  &lt;span class='c1'&gt;# Create a private network, which allows host-only access to the machine&lt;/span&gt;
+  &lt;span class='c1'&gt;# using a specific IP.&lt;/span&gt;
+  &lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;vm&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;network&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;private_network&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='ss'&gt;ip&lt;/span&gt;&lt;span class='p'&gt;:&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;192.168.33.10&amp;quot;&lt;/span&gt;
+
+  &lt;span class='c1'&gt;# Create a public network, which generally matched to bridged network.&lt;/span&gt;
+  &lt;span class='c1'&gt;# Bridged networks make the machine appear as another physical device on&lt;/span&gt;
+  &lt;span class='c1'&gt;# your network.&lt;/span&gt;
+  &lt;span class='c1'&gt;# config.vm.network &amp;quot;public_network&amp;quot;&lt;/span&gt;
+
+  &lt;span class='c1'&gt;# If true, then any SSH connections made will enable agent forwarding.&lt;/span&gt;
+  &lt;span class='c1'&gt;# Default value: false&lt;/span&gt;
+  &lt;span class='c1'&gt;# config.ssh.forward_agent = true&lt;/span&gt;
+
+  &lt;span class='c1'&gt;# Share an additional folder to the guest VM. The first argument is&lt;/span&gt;
+  &lt;span class='c1'&gt;# the path on the host to the actual folder. The second argument is&lt;/span&gt;
+  &lt;span class='c1'&gt;# the path on the guest to mount the folder. And the optional third&lt;/span&gt;
+  &lt;span class='c1'&gt;# argument is a set of non-required options.&lt;/span&gt;
+  &lt;span class='c1'&gt;# config.vm.synced_folder &amp;quot;../data&amp;quot;, &amp;quot;/vagrant_data&amp;quot;&lt;/span&gt;
+
+  &lt;span class='c1'&gt;# Provider-specific configuration so you can fine-tune various&lt;/span&gt;
+  &lt;span class='c1'&gt;# backing providers for Vagrant. These expose provider-specific options.&lt;/span&gt;
+  &lt;span class='c1'&gt;# Example for VirtualBox:&lt;/span&gt;
+  &lt;span class='c1'&gt;#&lt;/span&gt;
+  &lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;vm&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;provider&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;virtualbox&amp;quot;&lt;/span&gt; &lt;span class='k'&gt;do&lt;/span&gt; &lt;span class='o'&gt;|&lt;/span&gt;&lt;span class='n'&gt;vb&lt;/span&gt;&lt;span class='o'&gt;|&lt;/span&gt;
+    &lt;span class='c1'&gt;# Don&amp;#39;t boot with headless mode&lt;/span&gt;
+    &lt;span class='c1'&gt;# vb.gui = true&lt;/span&gt;
+
+    &lt;span class='c1'&gt;# Use VBoxManage to customize the VM. For example to change memory:&lt;/span&gt;
+    &lt;span class='n'&gt;vb&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;customize&lt;/span&gt; &lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;modifyvm&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='ss'&gt;:id&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;--memory&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='no'&gt;BOX_MEMORY&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt;
+
+    &lt;span class='c1'&gt;# Allow vm to directly access the hosts pci hardware&lt;/span&gt;
+    &lt;span class='c1'&gt;# https://www.virtualbox.org/manual/ch09.html#pcipassthrough&lt;/span&gt;
+    &lt;span class='c1'&gt;# vb.customize [&amp;quot;modifyvm&amp;quot;, :id, &amp;quot;--pciattach&amp;quot;, &amp;lt;CPU-architecture supported id.&amp;gt;]&lt;/span&gt;
+
+  &lt;span class='k'&gt;end&lt;/span&gt;
+  
+  &lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;vm&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;provision&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;shell&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='ss'&gt;path&lt;/span&gt;&lt;span class='p'&gt;:&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;get-linux-kernel.sh&amp;quot;&lt;/span&gt;
+&lt;span class='k'&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;After defining our Vagrantfile, we setup a shell provisioner to automate our installation of our system.&lt;/p&gt;
+
+&lt;p&gt;get-linux-kernel.sh&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;&lt;span class='c'&gt;#!/bin/bash&lt;/span&gt;
+
+&lt;span class='c'&gt;# locate our most up to date preempt_rt kernel patch, default to 3.14 if not set&lt;/span&gt;
+&lt;span class='nv'&gt;PREEMPT_RT_VERSION&lt;/span&gt;&lt;span class='o'&gt;=&lt;/span&gt;&lt;span class='k'&gt;${&lt;/span&gt;&lt;span class='nv'&gt;PREEMPT_RT_VERSION&lt;/span&gt;&lt;span class='k'&gt;:-&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;3.14.12-rt9&amp;quot;&lt;/span&gt;&lt;span class='k'&gt;}&lt;/span&gt;
+&lt;span class='c'&gt;# the linux kernel must match the patch version.&lt;/span&gt;
+&lt;span class='nv'&gt;LINUX_KERNEL_VERSION&lt;/span&gt;&lt;span class='o'&gt;=&lt;/span&gt;&lt;span class='k'&gt;${&lt;/span&gt;&lt;span class='nv'&gt;PREEMPT_RT_VERSION&lt;/span&gt;&lt;span class='k'&gt;}&lt;/span&gt;
+&lt;span class='c'&gt;# to ensure our kernel does not contain any malware, we grab the signer&amp;#39;s public key &lt;/span&gt;
+&lt;span class='nv'&gt;KERNEL_GPG_KEY&lt;/span&gt;&lt;span class='o'&gt;=&lt;/span&gt;&lt;span class='k'&gt;${&lt;/span&gt;&lt;span class='nv'&gt;KERNEL_GPG_KEY&lt;/span&gt;&lt;span class='k'&gt;:-&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;00411886&amp;quot;&lt;/span&gt;&lt;span class='k'&gt;}&lt;/span&gt;
+
+&lt;span class='nb'&gt;echo&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;GET KERNAL VERSION --&amp;gt; ${PREEMPT_RT_VERSION}&amp;quot;&lt;/span&gt;
+
+&lt;span class='c'&gt;# install linux kernel manager ketchup&lt;/span&gt;
+&lt;span class='nb'&gt;echo&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;Attempting to install ketchup kernel manager.&amp;quot;&lt;/span&gt;
+sudo apt-get install ketchup
+&lt;span class='nb'&gt;cd&lt;/span&gt; /usr/src/kernels
+mkdir linux
+&lt;span class='nb'&gt;cd &lt;/span&gt;linux
+
+&lt;span class='c'&gt;# setup our loading key&lt;/span&gt;
+gpg --recv-keys &lt;span class='k'&gt;${&lt;/span&gt;&lt;span class='nv'&gt;KERNEL_GPG_KEY&lt;/span&gt;&lt;span class='k'&gt;}&lt;/span&gt;
+
+&lt;span class='c'&gt;# grab the kernel source &lt;/span&gt;
+&lt;span class='nb'&gt;echo&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;Grabbing kernel version ${LINUX_KERNEL_VERSION}... (may take a while to grab source files)&amp;quot;&lt;/span&gt;
+ketchup -r -G &lt;span class='k'&gt;${&lt;/span&gt;&lt;span class='nv'&gt;PREEMPT_RT_VERSION&lt;/span&gt;&lt;span class='k'&gt;}&lt;/span&gt; &amp;gt; /dev/null 2&amp;gt;&lt;span class='p'&gt;&amp;amp;&lt;/span&gt;1
+&lt;span class='nb'&gt;echo&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;Completed linux kernel source download. Now you can go configure it.&amp;quot;&lt;/span&gt;
+
+&lt;span class='c'&gt;# NOTE: ketchup command above just automating this process below...&lt;/span&gt;
+
+&lt;span class='c'&gt;# get and apply the preempt-rt patch&lt;/span&gt;
+&lt;span class='c'&gt;# wget http://www.kernel.org/pub/linux/kernel/v3.14/linux-3.14.12.tar.bz2 &amp;gt; /dev/null 2&amp;gt;&amp;amp;1 &lt;/span&gt;
+&lt;span class='c'&gt;# wget https://www.kernel.org/pub/linux/kernel/projects/rt/3.14/patch-3.14.12-rt9.patch.gz &amp;gt; /dev/null 2&amp;gt;&amp;amp;1  &lt;/span&gt;
+
+&lt;span class='c'&gt;# tar -jxvf linux-3.14.12.tar.bz2&lt;/span&gt;
+&lt;span class='c'&gt;# mv linux-3.14.12 linux-3.14.12-rt9&lt;/span&gt;
+&lt;span class='c'&gt;# cd linux-3.14.12-rt9&lt;/span&gt;
+&lt;span class='c'&gt;# zcat ../patch-3.14.12-rt9.patch.gz | patch -p1&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;With the patched kernel setup, we can go configure and test the installation to our leisure. First we need to login to our vagrant box.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;vagrant ssh
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Then we perform the kernel setup steps listed below.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;&lt;span class='nb'&gt;cd &lt;/span&gt;linux-3.14.12-rt9
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;&lt;span class='c'&gt;# copy over your current kernel config file&lt;/span&gt;
+cp /boot/config-&lt;span class='sb'&gt;`&lt;/span&gt;uname -r&lt;span class='sb'&gt;`&lt;/span&gt; .config
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;&lt;span class='c'&gt;# run menuconfig&lt;/span&gt;
+&lt;span class='c'&gt;# I ran into an issue where I was missing library ncurses&lt;/span&gt;
+sudo apt-get install libncurses5-dev
+make menuconfig 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;You should see a text based configuration screen for the kernel. Follow the steps outlined below to install your kernel. Lets go completely preemptable.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='text'&gt;Processor type and features  ---&amp;gt;
+      Preemption Mode (Complete Preemption (Real-Time))  ---&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;You probably want some debugging to see what blows up.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='text'&gt;Kernel hacking  ---&amp;gt;
+   [*] Tracers  ---&amp;gt;
+      --- Tracers
+      [*]   Kernel Function Tracer
+      [*]   Interrupts-off Latency Tracer
+      [*]     Interrupts-off Latency Histogram
+      [*]   Preemption-off Latency Traver
+      [*]     Preemption-off Latency Histogram
+      [*]   Scheduling Latency Tracer
+      [*]     Scheduling Latency Histogram
+      [*]   Missed timer offsets histogram
+   [*] Debug Preemptive Kernel ---&amp;gt;
+      --- Locking Debug 
+      [*] RT Mutex debugging, deadlock detection
+      [*] Built-in scriptable tester for rt-mutexes
+      -*- Spinlock and rw-lock debugging: basic checks
+      -*- Mutex debugging: basic checks
+      [*] Wait/wound mutex debugging: Slowpath testing 
+      -*- Lock debugging: detect incorrect freeing of live locks
+      [*] Lock debugging: prove locking correctness
+      [*] Lock usage statistics
+      [*] Lock dependency engine debugging
+      [*] Sleep inside atomic section checking
+      [*] Locking API boot-time self-tests
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;img src=&quot;https://s3-us-west-2.amazonaws.com/nickma.com/Kernelconfig-2014-07-19+at+12.42.42+PM.png&quot; alt=&quot;Config Page&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://s3-us-west-2.amazonaws.com/nickma.com/Screen+Shot+2014-07-19+at+1.05.54+PM.png&quot; alt=&quot;Preempt RT Flag&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;A note from &lt;a href=&quot;https://www.osadl.org/Realtime-Preempt-Kernel.kernel-rt.0.html#ubuntu&quot;&gt;www.osadl.com&lt;/a&gt;: Should you happen to be the proud owner of a multi-core processor, be sure to specify the -j &lt;code&gt;&amp;lt;jobs&lt;/code&gt;&amp;gt; option of make where &lt;code&gt;&amp;lt;jobs&lt;/code&gt;&amp;gt; is twice the number of cores your processor has, as this will speed up kernel compilation considerably.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;&lt;span class='c'&gt;# takes a while to build the things, good time to coffee break&lt;/span&gt;
+&lt;span class='c'&gt;# add the -j if you know how many cores you have.&lt;/span&gt;
+sudo make
+
+&lt;span class='c'&gt;# then we install the built kernel&lt;/span&gt;
+make modules_install install
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;At this point you should be able to test out the kernel, perhaps in a later post if I find the bandwidth.&lt;/p&gt;
+
+&lt;h3 id=&quot;alternative&quot;&gt;Alternative&lt;/h3&gt;
+
+&lt;p&gt;Near the end of my research I found out that ubuntu has its own linux-realtime that can be apt-get installed, though only for certain versions, you may end up on an older version of the kernel. This is a far simpler solution on &lt;a href=&quot;https://wiki.ubuntu.com/RealTime&quot;&gt;ubuntu/RealTime&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;If you want to try this method, its easy! Since we are on a virtual machine, just kill it off with vagrant destroy and rebuild it with the correct base box. Just replace the provisioning script with the procedures on link above.&lt;/p&gt;</description>
+                <link>http://www.nickma.com/blog/2014/07/19/testing-custom-linux-kernels-on-vagrant</link>
+                <guid>http://www.nickma.com/blog/2014/07/19/testing-custom-linux-kernels-on-vagrant</guid>
+                <pubDate>2014-07-19T00:00:00-07:00</pubDate>
+        </item>
 
         <item>
                 <title>Wordpress on Dokku with Vagrant Devo.</title>
@@ -285,7 +472,7 @@ $ git commit -m &amp;quot;added db port to wp-config.php&amp;quot;
 &lt;p&gt;The easiest way to get a Dokku host is by following a &lt;a href=&quot;https://www.digitalocean.com/community/tutorials/how-to-use-the-dokku-one-click-digitalocean-image-to-run-a-node-js-app&quot;&gt;1-click setup on digitalocean&lt;/a&gt;. You can also setup Dokku on any server with root access, just follow the instructions listed on the installation readme on &lt;a href=&quot;https://github.com/progrium/dokku&quot;&gt;Dokku&lt;/a&gt;. The steps to setup a working application should be the same.&lt;/p&gt;</description>
                 <link>http://www.nickma.com/tutorial/2014/07/02/wordpress-on-dokku-with-vagrant-devo</link>
                 <guid>http://www.nickma.com/tutorial/2014/07/02/wordpress-on-dokku-with-vagrant-devo</guid>
-                <pubDate>2014-07-02T00:00:00-04:00</pubDate>
+                <pubDate>2014-07-02T00:00:00-07:00</pubDate>
         </item>
 
 

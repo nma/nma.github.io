@@ -109,9 +109,11 @@
 
   
      
-    	<li><a href="/tags.html#Vagrant-ref">Vagrant <span>1</span></a></li>
+    	<li><a href="/tags.html#Vagrant-ref">Vagrant <span>2</span></a></li>
      
     	<li><a href="/tags.html#Dokku-ref">Dokku <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#Ubuntu Kernel-ref">Ubuntu Kernel <span>1</span></a></li>
     
   
 
@@ -127,6 +129,14 @@
     
 
 
+  
+    
+      
+      	
+      	<li><a href="/blog/2014/07/19/testing-custom-linux-kernels-on-vagrant">Testing Custom Linux Kernels on Vagrant.</a></li>
+      	
+      
+    
   
     
       
@@ -152,6 +162,26 @@
       
       	
       	<li><a href="/tutorial/2014/07/02/wordpress-on-dokku-with-vagrant-devo">Wordpress on Dokku with Vagrant Devo.</a></li>
+      	
+      
+    
+  
+
+
+
+  </ul>
+ 
+  <h2 id="Ubuntu Kernel-ref">Ubuntu Kernel</h2>
+  <ul>
+      
+    
+
+
+  
+    
+      
+      	
+      	<li><a href="/blog/2014/07/19/testing-custom-linux-kernels-on-vagrant">Testing Custom Linux Kernels on Vagrant.</a></li>
       	
       
     
@@ -212,6 +242,19 @@
 	load('//platform.twitter.com/widgets.js', 'tweetjs');
 	// load('https://apis.google.com/js/plusone.js', 'gplus1js'); // Checkout http://j.mp/ApDgMr for usage html for this is <div class="g-plusone" data-size="medium"></div>
 	// load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/tags.html" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
+
+    var images = document.getElementsByTagName('img');
+    var myImge = null;
+    for(var i = 0; i < images.length; ++i) {
+      myImage = images[i];
+      myImage.onload = function() { 
+        if (this.offsetWidth > this.parentNode.offsetWidth) {
+          this.style.width = this.parentNode.offsetWidth + "px";
+          this.style.height = "100%";
+        }
+      }
+    }
+
 	}(document, 'script'));
 </script>
 <script>

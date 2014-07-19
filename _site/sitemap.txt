@@ -8,4 +8,5 @@ http://www.nickma.com/rss.xml
 http://www.nickma.com/sitemap.txt
 http://www.nickma.com/tags.html
 
+http://www.nickma.com/blog/2014/07/19/testing-custom-linux-kernels-on-vagrant
 http://www.nickma.com/tutorial/2014/07/02/wordpress-on-dokku-with-vagrant-devo
