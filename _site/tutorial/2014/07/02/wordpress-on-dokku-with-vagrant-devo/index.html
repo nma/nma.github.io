@@ -12,6 +12,7 @@
 	<link href='/assets/themes/the-minimum/css/style.css' rel="stylesheet" media="all">
 	<link href="http://feeds.feedburner.com/" rel="alternate" title="Wordpress on Dokku with Vagrant Devo." type="application/atom+xml">
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/analytics.js/1.5.2/analytics.min.js"></script>
 </head>
 <body>
 
@@ -145,7 +146,7 @@
 <span class='c1'># locate requisite ENV variables or default</span>
 <span class='no'>BOX_NAME</span> <span class='o'>=</span> <span class='no'>ENV</span><span class='o'>[</span><span class='s2'>&quot;BOX_NAME&quot;</span><span class='o'>]</span> <span class='o'>||</span> <span class='s2'>&quot;trusty32&quot;</span>
 <span class='no'>BOX_URI</span> <span class='o'>=</span> <span class='no'>ENV</span><span class='o'>[</span><span class='s2'>&quot;BOX_URI&quot;</span><span class='o'>]</span> <span class='o'>||</span> <span class='s2'>&quot;https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box&quot;</span> 
-<span class='no'>BOX_MEMORY</span> <span class='o'>=</span> <span class='no'>ENV</span><span class='o'>[</span><span class='s2'>&quot;BOX_MEMORY&quot;</span><span class='o'>]</span> <span class='o'>||</span> <span class='s2'>&quot;512&quot;</span>
+<span class='no'>BOX_MEMORY</span> <span class='o'>=</span> <span class='no'>ENV</span><span class='o'>[</span><span class='s2'>&quot;BOX_MEMORY&quot;</span><span class='o'>]</span> <span class='o'>||</span> <span class='s2'>&quot;768&quot;</span>
 <span class='no'>DOKKU_DOMAIN</span> <span class='o'>=</span> <span class='no'>ENV</span><span class='o'>[</span><span class='s2'>&quot;DOKKU_DOMAIN&quot;</span><span class='o'>]</span> <span class='o'>||</span> <span class='s2'>&quot;dokku.me&quot;</span>
 <span class='no'>DOKKU_IP</span> <span class='o'>=</span> <span class='no'>ENV</span><span class='o'>[</span><span class='s2'>&quot;DOKKU_IP&quot;</span><span class='o'>]</span> <span class='o'>||</span> <span class='s2'>&quot;10.0.0.2&quot;</span>
 
@@ -395,7 +396,7 @@ $ git commit -m &quot;added db port to wp-config.php&quot;
   
      
     	<li><a href="/categories.html#tutorial-ref">
-    		tutorial <span>1</span>
+    		tutorial <span>2</span>
     	</a></li>
     
   
@@ -456,7 +457,7 @@ $ git commit -m &quot;added db port to wp-config.php&quot;
 							
 
 							
-							<li class="next"><a class="internal" rel="next"  href="/blog/2014/07/19/testing-custom-linux-kernels-on-vagrant" title="View Testing Custom Linux Kernels on Vagrant.">Testing Custom Linux Kernels on Vagrant. &raquo;</a></li>
+							<li class="next"><a class="internal" rel="next"  href="/tutorial/2014/07/19/testing-custom-linux-kernels-on-vagrant" title="View Testing Custom Linux Kernels on Vagrant.">Testing Custom Linux Kernels on Vagrant. &raquo;</a></li>
 							
 						</ul>
 					</nav>

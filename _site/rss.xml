@@ -5,14 +5,16 @@
         <description>Nick Ma's Blog - Nick Ma</description>
         <link>http://www.nickma.com</link>
         <link>http://www.nickma.com</link>
-        <lastBuildDate>2014-07-19T15:13:20-07:00</lastBuildDate>
-        <pubDate>2014-07-19T15:13:20-07:00</pubDate>
+        <lastBuildDate>2014-07-24T20:10:58-07:00</lastBuildDate>
+        <pubDate>2014-07-24T20:10:58-07:00</pubDate>
         <ttl>1800</ttl>
 
 
         <item>
                 <title>Testing Custom Linux Kernels on Vagrant.</title>
-                <description>&lt;p&gt;A friend was building a custom Ubuntu kernel and after installing the new kernel on the machine the login page refused to work.&lt;/p&gt;
+                <description>&lt;p&gt;NOTE: This post doesn’t go into building the kernel, all I did for this week was to use vagrant to use best practices to pull the preempt-rt kernel. I will continue this post chain when I get time to compile and build a kernel properly.&lt;/p&gt;
+
+&lt;p&gt;A friend was building a custom Ubuntu kernel and after installing the new kernel on the machine the login page refused to work.&lt;/p&gt;
 
 &lt;p&gt;After reading about vagrant and working with virtual machines, I felt that testing major OS changes will definitely be beneficial on a virtual machine. So this blog post details my attempt (vain or not) at making a easily rebootable Vagrant environment to test potentially OS breaking changes to the kernel with out having to constantly re-install the OS on a physical machine.&lt;/p&gt;
 
@@ -28,7 +30,7 @@
 &lt;span class='no'&gt;VAGRANTFILE_API_VERSION&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;2&amp;quot;&lt;/span&gt;
 &lt;span class='no'&gt;BOX_NAME&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;BOX_NAME&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;trusty32-amd&amp;quot;&lt;/span&gt;
 &lt;span class='no'&gt;BOX_URI&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;BOX_URI&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box&amp;quot;&lt;/span&gt; 
-&lt;span class='no'&gt;BOX_MEMORY&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;BOX_MEMORY&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='mi'&gt;512&lt;/span&gt;
+&lt;span class='no'&gt;BOX_MEMORY&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;BOX_MEMORY&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='mi'&gt;750&lt;/span&gt;
 &lt;span class='no'&gt;BOX_HOST&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;BOX_HOST&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;preempt-rt&amp;quot;&lt;/span&gt;
 
 &lt;span class='no'&gt;Vagrant&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;configure&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='no'&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt; &lt;span class='k'&gt;do&lt;/span&gt; &lt;span class='o'&gt;|&lt;/span&gt;&lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;|&lt;/span&gt;
@@ -192,8 +194,8 @@ make modules_install install
 &lt;p&gt;Near the end of my research I found out that ubuntu has its own linux-realtime that can be apt-get installed, though only for certain versions, you may end up on an older version of the kernel. This is a far simpler solution on &lt;a href=&quot;https://wiki.ubuntu.com/RealTime&quot;&gt;ubuntu/RealTime&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;If you want to try this method, its easy! Since we are on a virtual machine, just kill it off with vagrant destroy and rebuild it with the correct base box. Just replace the provisioning script with the procedures on link above.&lt;/p&gt;</description>
-                <link>http://www.nickma.com/blog/2014/07/19/testing-custom-linux-kernels-on-vagrant</link>
-                <guid>http://www.nickma.com/blog/2014/07/19/testing-custom-linux-kernels-on-vagrant</guid>
+                <link>http://www.nickma.com/tutorial/2014/07/19/testing-custom-linux-kernels-on-vagrant</link>
+                <guid>http://www.nickma.com/tutorial/2014/07/19/testing-custom-linux-kernels-on-vagrant</guid>
                 <pubDate>2014-07-19T00:00:00-07:00</pubDate>
         </item>
 
@@ -238,7 +240,7 @@ make modules_install install
 &lt;span class='c1'&gt;# locate requisite ENV variables or default&lt;/span&gt;
 &lt;span class='no'&gt;BOX_NAME&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;BOX_NAME&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;trusty32&amp;quot;&lt;/span&gt;
 &lt;span class='no'&gt;BOX_URI&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;BOX_URI&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box&amp;quot;&lt;/span&gt; 
-&lt;span class='no'&gt;BOX_MEMORY&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;BOX_MEMORY&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;512&amp;quot;&lt;/span&gt;
+&lt;span class='no'&gt;BOX_MEMORY&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;BOX_MEMORY&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;768&amp;quot;&lt;/span&gt;
 &lt;span class='no'&gt;DOKKU_DOMAIN&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;DOKKU_DOMAIN&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;dokku.me&amp;quot;&lt;/span&gt;
 &lt;span class='no'&gt;DOKKU_IP&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;DOKKU_IP&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;10.0.0.2&amp;quot;&lt;/span&gt;
 

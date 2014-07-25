@@ -59,7 +59,7 @@ VAGRANTFILE_API_VERSION = "2"
 # locate requisite ENV variables or default
 BOX_NAME = ENV["BOX_NAME"] || "trusty32"
 BOX_URI = ENV["BOX_URI"] || "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box" 
-BOX_MEMORY = ENV["BOX_MEMORY"] || "512"
+BOX_MEMORY = ENV["BOX_MEMORY"] || "768"
 DOKKU_DOMAIN = ENV["DOKKU_DOMAIN"] || "dokku.me"
 DOKKU_IP = ENV["DOKKU_IP"] || "10.0.0.2"
 

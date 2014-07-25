@@ -12,6 +12,7 @@
 	<link href='/assets/themes/the-minimum/css/style.css' rel="stylesheet" media="all">
 	<link href="http://feeds.feedburner.com/" rel="alternate" title="Testing Custom Linux Kernels on Vagrant." type="application/atom+xml">
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/analytics.js/1.5.2/analytics.min.js"></script>
 </head>
 <body>
 
@@ -106,7 +107,9 @@
               <li><div class="twitter-follow"><a href="https://twitter.com/NickMa38" class="twitter-follow-button" data-show-count="false" data-lang="en"></a></div></li>
             </ul>
           </div>
-					<p>A friend was building a custom Ubuntu kernel and after installing the new kernel on the machine the login page refused to work.</p>
+					<p>NOTE: This post doesn’t go into building the kernel, all I did for this week was to use vagrant to use best practices to pull the preempt-rt kernel. I will continue this post chain when I get time to compile and build a kernel properly.</p>
+
+<p>A friend was building a custom Ubuntu kernel and after installing the new kernel on the machine the login page refused to work.</p>
 
 <p>After reading about vagrant and working with virtual machines, I felt that testing major OS changes will definitely be beneficial on a virtual machine. So this blog post details my attempt (vain or not) at making a easily rebootable Vagrant environment to test potentially OS breaking changes to the kernel with out having to constantly re-install the OS on a physical machine.</p>
 
@@ -122,7 +125,7 @@
 <span class='no'>VAGRANTFILE_API_VERSION</span> <span class='o'>=</span> <span class='s2'>&quot;2&quot;</span>
 <span class='no'>BOX_NAME</span> <span class='o'>=</span> <span class='no'>ENV</span><span class='o'>[</span><span class='s2'>&quot;BOX_NAME&quot;</span><span class='o'>]</span> <span class='o'>||</span> <span class='s2'>&quot;trusty32-amd&quot;</span>
 <span class='no'>BOX_URI</span> <span class='o'>=</span> <span class='no'>ENV</span><span class='o'>[</span><span class='s2'>&quot;BOX_URI&quot;</span><span class='o'>]</span> <span class='o'>||</span> <span class='s2'>&quot;https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box&quot;</span> 
-<span class='no'>BOX_MEMORY</span> <span class='o'>=</span> <span class='no'>ENV</span><span class='o'>[</span><span class='s2'>&quot;BOX_MEMORY&quot;</span><span class='o'>]</span> <span class='o'>||</span> <span class='mi'>512</span>
+<span class='no'>BOX_MEMORY</span> <span class='o'>=</span> <span class='no'>ENV</span><span class='o'>[</span><span class='s2'>&quot;BOX_MEMORY&quot;</span><span class='o'>]</span> <span class='o'>||</span> <span class='mi'>750</span>
 <span class='no'>BOX_HOST</span> <span class='o'>=</span> <span class='no'>ENV</span><span class='o'>[</span><span class='s2'>&quot;BOX_HOST&quot;</span><span class='o'>]</span> <span class='o'>||</span> <span class='s2'>&quot;preempt-rt&quot;</span>
 
 <span class='no'>Vagrant</span><span class='o'>.</span><span class='n'>configure</span><span class='p'>(</span><span class='no'>VAGRANTFILE_API_VERSION</span><span class='p'>)</span> <span class='k'>do</span> <span class='o'>|</span><span class='n'>config</span><span class='o'>|</span>
@@ -303,8 +306,8 @@ make modules_install install
 
   
      
-    	<li><a href="/categories.html#blog-ref">
-    		blog <span>1</span>
+    	<li><a href="/categories.html#tutorial-ref">
+    		tutorial <span>2</span>
     	</a></li>
     
   
@@ -413,7 +416,7 @@ make modules_install install
 		};
 	load('//platform.twitter.com/widgets.js', 'tweetjs');
 	// load('https://apis.google.com/js/plusone.js', 'gplus1js'); // Checkout http://j.mp/ApDgMr for usage html for this is <div class="g-plusone" data-size="medium"></div>
-	// load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/blog/2014/07/19/testing-custom-linux-kernels-on-vagrant" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
+	// load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/tutorial/2014/07/19/testing-custom-linux-kernels-on-vagrant" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
 
     var images = document.getElementsByTagName('img');
     var myImge = null;

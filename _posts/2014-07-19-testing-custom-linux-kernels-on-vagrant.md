@@ -7,6 +7,8 @@ tags: ["Vagrant", "Ubuntu Kernel"]
 ---
 {% include JB/setup %}
 
+NOTE: This post doesn't go into building the kernel, all I did for this week was to use vagrant to use best practices to pull the preempt-rt kernel. I will continue this post chain when I get time to compile and build a kernel properly.
+
 A friend was building a custom Ubuntu kernel and after installing the new kernel on the machine the login page refused to work.
 
 After reading about vagrant and working with virtual machines, I felt that testing major OS changes will definitely be beneficial on a virtual machine.
@@ -26,7 +28,7 @@ VagrantFile
 VAGRANTFILE_API_VERSION = "2"
 BOX_NAME = ENV["BOX_NAME"] || "trusty32-amd"
 BOX_URI = ENV["BOX_URI"] || "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box" 
-BOX_MEMORY = ENV["BOX_MEMORY"] || 512
+BOX_MEMORY = ENV["BOX_MEMORY"] || 750
 BOX_HOST = ENV["BOX_HOST"] || "preempt-rt"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|

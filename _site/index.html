@@ -12,6 +12,7 @@
 	<link href='/assets/themes/the-minimum/css/style.css' rel="stylesheet" media="all">
 	<link href="http://feeds.feedburner.com/" rel="alternate" title="" type="application/atom+xml">
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/analytics.js/1.5.2/analytics.min.js"></script>
 </head>
 <body>
 
@@ -102,8 +103,10 @@
 				<div class="entry-content">
 					<div class='row'>
     <div class='span12'>
-        <h1><a href='/blog/2014/07/19/testing-custom-linux-kernels-on-vagrant'>Testing Custom Linux Kernels on Vagrant.</a></h1>
-        <p>A friend was building a custom Ubuntu kernel and after installing the new kernel on the machine the login page refused to work.</p>
+        <h1><a href='/tutorial/2014/07/19/testing-custom-linux-kernels-on-vagrant'>Testing Custom Linux Kernels on Vagrant.</a></h1>
+        <p>NOTE: This post doesn’t go into building the kernel, all I did for this week was to use vagrant to use best practices to pull the preempt-rt kernel. I will continue this post chain when I get time to compile and build a kernel properly.</p>
+
+<p>A friend was building a custom Ubuntu kernel and after installing the new kernel on the machine the login page refused to work.</p>
 
 <p>After reading about vagrant and working with virtual machines, I felt that testing major OS changes will definitely be beneficial on a virtual machine. So this blog post details my attempt (vain or not) at making a easily rebootable Vagrant environment to test potentially OS breaking changes to the kernel with out having to constantly re-install the OS on a physical machine.</p>
 
@@ -119,7 +122,7 @@
 <span class='no'>VAGRANTFILE_API_VERSION</span> <span class='o'>=</span> <span class='s2'>&quot;2&quot;</span>
 <span class='no'>BOX_NAME</span> <span class='o'>=</span> <span class='no'>ENV</span><span class='o'>[</span><span class='s2'>&quot;BOX_NAME&quot;</span><span class='o'>]</span> <span class='o'>||</span> <span class='s2'>&quot;trusty32-amd&quot;</span>
 <span class='no'>BOX_URI</span> <span class='o'>=</span> <span class='no'>ENV</span><span class='o'>[</span><span class='s2'>&quot;BOX_URI&quot;</span><span class='o'>]</span> <span class='o'>||</span> <span class='s2'>&quot;https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box&quot;</span> 
-<span class='no'>BOX_MEMORY</span> <span class='o'>=</span> <span class='no'>ENV</span><span class='o'>[</span><span class='s2'>&quot;BOX_MEMORY&quot;</span><span class='o'>]</span> <span class='o'>||</span> <span class='mi'>512</span>
+<span class='no'>BOX_MEMORY</span> <span class='o'>=</span> <span class='no'>ENV</span><span class='o'>[</span><span class='s2'>&quot;BOX_MEMORY&quot;</span><span class='o'>]</span> <span class='o'>||</span> <span class='mi'>750</span>
 <span class='no'>BOX_HOST</span> <span class='o'>=</span> <span class='no'>ENV</span><span class='o'>[</span><span class='s2'>&quot;BOX_HOST&quot;</span><span class='o'>]</span> <span class='o'>||</span> <span class='s2'>&quot;preempt-rt&quot;</span>
 
 <span class='no'>Vagrant</span><span class='o'>.</span><span class='n'>configure</span><span class='p'>(</span><span class='no'>VAGRANTFILE_API_VERSION</span><span class='p'>)</span> <span class='k'>do</span> <span class='o'>|</span><span class='n'>config</span><span class='o'>|</span>
@@ -286,7 +289,7 @@ make modules_install install
     </div>
   </div><h3>Recent Posts</h3><ul class='posts'>
   
-    <li><span>19 Jul 2014</span> &raquo; <a href='/blog/2014/07/19/testing-custom-linux-kernels-on-vagrant'>Testing Custom Linux Kernels on Vagrant.</a></li>
+    <li><span>19 Jul 2014</span> &raquo; <a href='/tutorial/2014/07/19/testing-custom-linux-kernels-on-vagrant'>Testing Custom Linux Kernels on Vagrant.</a></li>
   
     <li><span>02 Jul 2014</span> &raquo; <a href='/tutorial/2014/07/02/wordpress-on-dokku-with-vagrant-devo'>Wordpress on Dokku with Vagrant Devo.</a></li>
   
