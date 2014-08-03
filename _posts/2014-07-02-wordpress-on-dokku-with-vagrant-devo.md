@@ -18,7 +18,10 @@ Dokku is a very hackable and has very small code base, making it much easier to 
 To start a development environment I choose to use Vagrant, which is a tool that wraps development environments inside a virtual machine using VirtualBox, VMware, and AWS, and etc. (Full list on the official Vagrant docs). After a few attempts fiddling with my own opts and constantly being hit with {{ \"it works on my machine bugs\" }}.
 The first step is to install Vagrant and the virtual machine provider (VirtualBox in my case), the installation will vary, so make sure to check the Vagrant docs for your platform. 
 
-I am currently reading the book [Vagrant: Up and Running] (http://www.amazon.com/gp/product/1449335837/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN=1449335837&amp;linkCode=as2&amp;tag=nisbl00c-20&amp;linkId=E3QWJ4CWFM7XNHFW) to learn Vagrant as I go along.
+I am currently reading the book [Vagrant: Up and Running](http://www.amazon.com/gp/product/1449335837/ref=as_li_tl?ie=UTF8&camp=1789&creative=390957&creativeASIN=1449335837&linkCode=as2&tag=nisbl00c-20&linkId=X7AAEEENEHJCKGGL): 
+
+<a href="http://www.amazon.com/gp/product/1449335837/ref=as_li_tl?ie=UTF8&camp=1789&creative=390957&creativeASIN=1449335837&linkCode=as2&tag=nisbl00c-20&linkId=X7AAEEENEHJCKGGL"><img border="0" src="http://ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=1449335837&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=nisbl00c-20" ></a>
+
 This is a pretty detailed book written by the author of Vagrant, it contains all the details you need to start using Vagrant properly. If bedside reading is not your thing, don't worry, this tutorial provides a Vagrant configuration so you don't need to touch anything. 
 
 ### What You Need

@@ -75,7 +75,8 @@
     for(var i = 0; i < images.length; ++i) {
       myImage = images[i];
       myImage.onload = function() { 
-        if (this.offsetWidth > this.parentNode.offsetWidth) {
+        console.log(this.parentNode.tagName);
+        if ((this.offsetWidth > this.parentNode.offsetWidth) && (this.parentNode.tagName.toLowerCase() !== 'a')) {
           this.style.width = this.parentNode.offsetWidth + "px";
           this.style.height = "100%";
         }
