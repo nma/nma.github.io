@@ -20,7 +20,7 @@ The first step is to install Vagrant and the virtual machine provider (VirtualBo
 
 I am currently reading the book [Vagrant: Up and Running](http://www.amazon.com/gp/product/1449335837/ref=as_li_tl?ie=UTF8&camp=1789&creative=390957&creativeASIN=1449335837&linkCode=as2&tag=nisbl00c-20&linkId=X7AAEEENEHJCKGGL): 
 
-<a href="http://www.amazon.com/gp/product/1449335837/ref=as_li_tl?ie=UTF8&camp=1789&creative=390957&creativeASIN=1449335837&linkCode=as2&tag=nisbl00c-20&linkId=X7AAEEENEHJCKGGL"><img border="0" src="http://ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=1449335837&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=nisbl00c-20" ></a>
+<a href="http://www.amazon.com/gp/product/1449335837/ref=as_li_tl?ie=UTF8&camp=1789&creative=390957&creativeASIN=1449335837&linkCode=as2&tag=nisbl00c-20&linkId=X7AAEEENEHJCKGGL"><img border="0" width="150px" src="http://ecx.images-amazon.com/images/I/51t8vBfbyhL.jpg" ></a>
 
 This is a pretty detailed book written by the author of Vagrant, it contains all the details you need to start using Vagrant properly. If bedside reading is not your thing, don't worry, this tutorial provides a Vagrant configuration so you don't need to touch anything. 
 
