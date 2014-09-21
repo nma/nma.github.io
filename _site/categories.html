@@ -44,6 +44,14 @@
     
       
       	
+      	<li><a href="/Books/index.html">Books</a></li>
+      	
+      
+    
+  
+    
+      
+      	
       	<li class="active"><a href="/categories.html" class="active">Categories</a></li>
       	
       
@@ -111,7 +119,7 @@
   
      
     	<li><a href="/categories.html#tutorial-ref">
-    		tutorial <span>2</span>
+    		tutorial <span>3</span>
     	</a></li>
     
   
@@ -127,6 +135,14 @@
     
 
 
+  
+    
+      
+      	
+      	<li><a href="/tutorial/2014/08/24/quickly-vagrant-up-redmine">Quickly Vagrant Up Redmine</a></li>
+      	
+      
+    
   
     
       
@@ -207,7 +223,8 @@
     for(var i = 0; i < images.length; ++i) {
       myImage = images[i];
       myImage.onload = function() { 
-        if (this.offsetWidth > this.parentNode.offsetWidth) {
+        console.log(this.parentNode.tagName);
+        if ((this.offsetWidth > this.parentNode.offsetWidth) && (this.parentNode.tagName.toLowerCase() !== 'a')) {
           this.style.width = this.parentNode.offsetWidth + "px";
           this.style.height = "100%";
         }

@@ -5,152 +5,297 @@
         <description>Nick Ma's Blog - Nick Ma</description>
         <link>http://www.nickma.com</link>
         <link>http://www.nickma.com</link>
-        <lastBuildDate>2014-07-24T20:10:58-07:00</lastBuildDate>
-        <pubDate>2014-07-24T20:10:58-07:00</pubDate>
+        <lastBuildDate>2014-09-21T13:39:41-07:00</lastBuildDate>
+        <pubDate>2014-09-21T13:39:41-07:00</pubDate>
         <ttl>1800</ttl>
 
 
         <item>
+                <title>Quickly Vagrant Up Redmine</title>
+                <description>
+&lt;p&gt;I am placing these quick tutorials in my &lt;a href=&quot;https://github.com/nma/opensource&quot;&gt;opensource projects respository&lt;/a&gt; so I can have a quick reference on how to spin up new opensource instances when I need them.&lt;/p&gt;
+
+&lt;p&gt;Bitnami stacks it really easy to spin up preconfigured stacks for the websites, they have a comprehensive list of open source stuff at &lt;a href=&quot;https://bitnami.com/stacks&quot;&gt;Bitnami stacks&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;You could provision the machines with a &lt;a href=&quot;https://bitnami.com/stack/redmine/installer&quot;&gt;Bitnami Redmine Installer&lt;/a&gt; for Ubuntu and have that run on your Vagrant vm. Alternatively, you could use a 
+normal shell script and it will install redmine through the apt-get channels. &lt;/p&gt;
+
+&lt;p&gt;If you want to see how to deploy redmine independantly, please check out bootstrap.sh.I did not write it, but I learned a lot of new commands such as defconf-set-selections for provisioning with shell scripts.&lt;/p&gt;
+
+&lt;p&gt;For purpose of this tutorial, would be best if we stick with the bitnami stacks, the VagrantFile has commented out the bootstrap.sh and prefers bitnami-bootstrap.sh.
+The files can all be located &lt;a href=&quot;https://github.com/nma/opensource/redmine&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The bashscript is as follows:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;c&quot;&gt;#bin/bash&lt;/span&gt;
+
+sudo cat &amp;gt; redmine.ini &lt;span class=&quot;s&quot;&gt;&amp;lt;&amp;lt;EOF&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;base_user=admin&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;base_password=redminepwd&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;redmine_language=en&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;smtp_email_provider=custom&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;smtp_enable=1&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;smtp_user=myemail@mydomain.com&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;smtp_password=mySMTPPassword&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;smtp_host=smtp.domain.com&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;smtp_port=587&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;smtp_protocol=tls&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;EOF&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;INSTALLER&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;bitnami-redmine
+
+&lt;span class=&quot;c&quot;&gt;# get the installer&lt;/span&gt;
+wget -O &lt;span class=&quot;nv&quot;&gt;$INSTALLER&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;https://bitnami.com/redirect/to/39065/bitnami-redmine-2.5.2-1-linux-x64-installer.run&amp;quot;&lt;/span&gt; &amp;gt; /dev/null
+
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;[INFO] Done installing bitnami-redmine installer&amp;quot;&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# set permissions&lt;/span&gt;
+chmod a+x &lt;span class=&quot;nv&quot;&gt;$INSTALLER&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# do the deed&lt;/span&gt;
+./&lt;span class=&quot;nv&quot;&gt;$INSTALLER&lt;/span&gt; --mode unattended --optionfile redmine.ini
+&lt;span class=&quot;c&quot;&gt;# ssh and configure manually&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#./$INSTALLER --mode text  &lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The Vagrant Environment will take shell script above and provision the VM. The VagrantFile:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# -*- mode: ruby -*-&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# vi: set ft=ruby :&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Vagrantfile API/syntax version. Don&amp;#39;t touch unless you know what you&amp;#39;re doing!&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;VAGRANTFILE_API_VERSION&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;2&amp;quot;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# locate requisite ENV variables or default&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;BOX_NAME&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;BOX_NAME&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;trusty64-amd&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;BOX_URI&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;BOX_URI&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box&amp;quot;&lt;/span&gt; 
+&lt;span class=&quot;no&quot;&gt;BOX_MEMORY&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;BOX_MEMORY&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;2048&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;REDMINE_DOMAIN&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;REDMINE_DOMAIN&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;redmine.me&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;REDMINE_IP&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;REDMINE_IP&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;10.0.0.2&amp;quot;&lt;/span&gt;
+
+&lt;span class=&quot;no&quot;&gt;Vagrant&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;configure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# All Vagrant configuration is done here. The most common configuration&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# options are documented and commented below. For a complete reference,&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# please see the online documentation at vagrantup.com.&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;# Every Vagrant virtual environment requires a box to build off of.&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;box&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;BOX_NAME&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;# The url from where the &amp;#39;config.vm.box&amp;#39; box will be fetched if it&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# doesn&amp;#39;t already exist on the user&amp;#39;s system.&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;box_url&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;BOX_URI&lt;/span&gt; 
+
+  &lt;span class=&quot;c1&quot;&gt;# Create a forwarded port mapping which allows access to a specific port&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# within the machine from a port on the host machine. In the example below,&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# accessing &amp;quot;localhost:8080&amp;quot; will access port 80 on the guest machine.&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;network&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;forwarded_port&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;guest&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;80&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;host&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;8080&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;# Create a private network, which allows host-only access to the machine&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# using a specific IP.&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;network&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;private_network&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;ip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;REDMINE_IP&lt;/span&gt;
+  
+  &lt;span class=&quot;c1&quot;&gt;# tells vagrant to sync just our theme on the virtual machine&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# comment out to sync everything to /vagrant&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;synced_folder&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;File&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dirname&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;__FILE__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;/vagrant/&amp;quot;&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;# tells vagrant to use our hostname&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hostname&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;REDMINE_DOMAIN&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;# Provider-specific configuration so you can fine-tune various&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# backing providers for Vagrant. These expose provider-specific options.&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# Example for VirtualBox:&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;#&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;provider&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;virtualbox&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vb&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+     &lt;span class=&quot;c1&quot;&gt;# Don&amp;#39;t boot with headless mode&lt;/span&gt;
+     &lt;span class=&quot;c1&quot;&gt;#vb.gui = true&lt;/span&gt;
+  
+    &lt;span class=&quot;c1&quot;&gt;# this option makes the NAT engine use the host&amp;#39;s resolver mechanisms to handle DNS requests &lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# which essentially means that we can specify domain &amp;quot;redmine.me&amp;quot; to be resolved by our local hosts file &lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;#vb.customize [&amp;quot;modifyvm&amp;quot;, :id, &amp;quot;--natdnshostresolver1&amp;quot;, &amp;quot;on&amp;quot;]&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# set the memory of the virtualbox&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;vb&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;customize&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;modifyvm&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;--memory&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;BOX_MEMORY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;# once the vm is started&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# use the bootstrap.sh file to install and setup redmine&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;provision&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;shell&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;bitnami-bootstrap.sh&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# config.vm.provision &amp;quot;shell&amp;quot;, path: &amp;quot;update-theme.sh&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;If you check out the other files in the repository, you can find the bootstrap.sh method, which demonstrates how redmine can be provisioned from pure shell script. 
+I plan to add on a chef provisioner as I am currently planning to look into that, a puppet provisioner may follow soon as well.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;
+vagrant up
+&lt;/code&gt;
+You should see redmine at 10.0.0.2/redmine&lt;/p&gt;
+</description>
+                <link>http://www.nickma.com/tutorial/2014/08/24/quickly-vagrant-up-redmine</link>
+                <guid>http://www.nickma.com/tutorial/2014/08/24/quickly-vagrant-up-redmine</guid>
+                <pubDate>2014-08-24T00:00:00-07:00</pubDate>
+        </item>
+
+        <item>
                 <title>Testing Custom Linux Kernels on Vagrant.</title>
-                <description>&lt;p&gt;NOTE: This post doesn’t go into building the kernel, all I did for this week was to use vagrant to use best practices to pull the preempt-rt kernel. I will continue this post chain when I get time to compile and build a kernel properly.&lt;/p&gt;
+                <description>
+&lt;p&gt;NOTE: This post doesn&amp;#8217;t go into building the kernel, all I did for this week was to use vagrant to use best practices to pull the preempt-rt kernel. I will continue this post chain when I get time to compile and build a kernel properly.&lt;/p&gt;
 
 &lt;p&gt;A friend was building a custom Ubuntu kernel and after installing the new kernel on the machine the login page refused to work.&lt;/p&gt;
 
-&lt;p&gt;After reading about vagrant and working with virtual machines, I felt that testing major OS changes will definitely be beneficial on a virtual machine. So this blog post details my attempt (vain or not) at making a easily rebootable Vagrant environment to test potentially OS breaking changes to the kernel with out having to constantly re-install the OS on a physical machine.&lt;/p&gt;
+&lt;p&gt;After reading about vagrant and working with virtual machines, I felt that testing major OS changes will definitely be beneficial on a virtual machine.
+So this blog post details my attempt (vain or not) at making a easily rebootable Vagrant environment to test potentially OS breaking changes to the kernel with out having to constantly re-install the OS on a physical machine. &lt;/p&gt;
 
 &lt;p&gt;The first step will be to setup a default box for Vagrant to work. Since I had previously downloaded a trusty32-amd machine, I will stick with that for my base box.&lt;/p&gt;
 
 &lt;p&gt;Define our Vagrantfile in the project directory should look like this.&lt;/p&gt;
 
 &lt;p&gt;VagrantFile&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;&lt;span class='c1'&gt;# -*- mode: ruby -*-&lt;/span&gt;
-&lt;span class='c1'&gt;# vi: set ft=ruby :&lt;/span&gt;
 
-&lt;span class='c1'&gt;# Vagrantfile API/syntax version. Don&amp;#39;t touch unless you know what you&amp;#39;re doing!&lt;/span&gt;
-&lt;span class='no'&gt;VAGRANTFILE_API_VERSION&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;2&amp;quot;&lt;/span&gt;
-&lt;span class='no'&gt;BOX_NAME&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;BOX_NAME&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;trusty32-amd&amp;quot;&lt;/span&gt;
-&lt;span class='no'&gt;BOX_URI&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;BOX_URI&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box&amp;quot;&lt;/span&gt; 
-&lt;span class='no'&gt;BOX_MEMORY&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;BOX_MEMORY&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='mi'&gt;750&lt;/span&gt;
-&lt;span class='no'&gt;BOX_HOST&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;BOX_HOST&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;preempt-rt&amp;quot;&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# -*- mode: ruby -*-&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# vi: set ft=ruby :&lt;/span&gt;
 
-&lt;span class='no'&gt;Vagrant&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;configure&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='no'&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt; &lt;span class='k'&gt;do&lt;/span&gt; &lt;span class='o'&gt;|&lt;/span&gt;&lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;|&lt;/span&gt;
-  &lt;span class='c1'&gt;# All Vagrant configuration is done here. The most common configuration&lt;/span&gt;
-  &lt;span class='c1'&gt;# options are documented and commented below. For a complete reference,&lt;/span&gt;
-  &lt;span class='c1'&gt;# please see the online documentation at vagrantup.com.&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# Vagrantfile API/syntax version. Don&amp;#39;t touch unless you know what you&amp;#39;re doing!&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;VAGRANTFILE_API_VERSION&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;2&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;BOX_NAME&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;BOX_NAME&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;trusty32-amd&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;BOX_URI&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;BOX_URI&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box&amp;quot;&lt;/span&gt; 
+&lt;span class=&quot;no&quot;&gt;BOX_MEMORY&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;BOX_MEMORY&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;750&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;BOX_HOST&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;BOX_HOST&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;preempt-rt&amp;quot;&lt;/span&gt;
 
-  &lt;span class='c1'&gt;# Every Vagrant virtual environment requires a box to build off of.&lt;/span&gt;
-  &lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;vm&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;box&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;BOX_NAME&lt;/span&gt;
-  &lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;vm&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;box_url&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;BOX_URI&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Vagrant&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;configure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# All Vagrant configuration is done here. The most common configuration&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# options are documented and commented below. For a complete reference,&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# please see the online documentation at vagrantup.com.&lt;/span&gt;
 
-  &lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;vm&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;host_name&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;BOX_HOST&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# Every Vagrant virtual environment requires a box to build off of.&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;box&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;BOX_NAME&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;box_url&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;BOX_URI&lt;/span&gt;
 
-  &lt;span class='c1'&gt;# Disable automatic box update checking. If you disable this, then&lt;/span&gt;
-  &lt;span class='c1'&gt;# boxes will only be checked for updates when the user runs&lt;/span&gt;
-  &lt;span class='c1'&gt;# `vagrant box outdated`. This is not recommended.&lt;/span&gt;
-  &lt;span class='c1'&gt;# config.vm.box_check_update = false&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;host_name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;BOX_HOST&lt;/span&gt;
 
-  &lt;span class='c1'&gt;# Create a forwarded port mapping which allows access to a specific port&lt;/span&gt;
-  &lt;span class='c1'&gt;# within the machine from a port on the host machine. In the example below,&lt;/span&gt;
-  &lt;span class='c1'&gt;# accessing &amp;quot;localhost:8080&amp;quot; will access port 80 on the guest machine.&lt;/span&gt;
-  &lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;vm&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;network&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;forwarded_port&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='ss'&gt;guest&lt;/span&gt;&lt;span class='p'&gt;:&lt;/span&gt; &lt;span class='mi'&gt;80&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='ss'&gt;host&lt;/span&gt;&lt;span class='p'&gt;:&lt;/span&gt; &lt;span class='mi'&gt;8080&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# Disable automatic box update checking. If you disable this, then&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# boxes will only be checked for updates when the user runs&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# `vagrant box outdated`. This is not recommended.&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# config.vm.box_check_update = false&lt;/span&gt;
 
-  &lt;span class='c1'&gt;# Create a private network, which allows host-only access to the machine&lt;/span&gt;
-  &lt;span class='c1'&gt;# using a specific IP.&lt;/span&gt;
-  &lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;vm&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;network&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;private_network&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='ss'&gt;ip&lt;/span&gt;&lt;span class='p'&gt;:&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;192.168.33.10&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# Create a forwarded port mapping which allows access to a specific port&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# within the machine from a port on the host machine. In the example below,&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# accessing &amp;quot;localhost:8080&amp;quot; will access port 80 on the guest machine.&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;network&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;forwarded_port&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;guest&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;80&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;host&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;8080&lt;/span&gt;
 
-  &lt;span class='c1'&gt;# Create a public network, which generally matched to bridged network.&lt;/span&gt;
-  &lt;span class='c1'&gt;# Bridged networks make the machine appear as another physical device on&lt;/span&gt;
-  &lt;span class='c1'&gt;# your network.&lt;/span&gt;
-  &lt;span class='c1'&gt;# config.vm.network &amp;quot;public_network&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# Create a private network, which allows host-only access to the machine&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# using a specific IP.&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;network&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;private_network&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;ip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;192.168.33.10&amp;quot;&lt;/span&gt;
 
-  &lt;span class='c1'&gt;# If true, then any SSH connections made will enable agent forwarding.&lt;/span&gt;
-  &lt;span class='c1'&gt;# Default value: false&lt;/span&gt;
-  &lt;span class='c1'&gt;# config.ssh.forward_agent = true&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# Create a public network, which generally matched to bridged network.&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# Bridged networks make the machine appear as another physical device on&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# your network.&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# config.vm.network &amp;quot;public_network&amp;quot;&lt;/span&gt;
 
-  &lt;span class='c1'&gt;# Share an additional folder to the guest VM. The first argument is&lt;/span&gt;
-  &lt;span class='c1'&gt;# the path on the host to the actual folder. The second argument is&lt;/span&gt;
-  &lt;span class='c1'&gt;# the path on the guest to mount the folder. And the optional third&lt;/span&gt;
-  &lt;span class='c1'&gt;# argument is a set of non-required options.&lt;/span&gt;
-  &lt;span class='c1'&gt;# config.vm.synced_folder &amp;quot;../data&amp;quot;, &amp;quot;/vagrant_data&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# If true, then any SSH connections made will enable agent forwarding.&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# Default value: false&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# config.ssh.forward_agent = true&lt;/span&gt;
 
-  &lt;span class='c1'&gt;# Provider-specific configuration so you can fine-tune various&lt;/span&gt;
-  &lt;span class='c1'&gt;# backing providers for Vagrant. These expose provider-specific options.&lt;/span&gt;
-  &lt;span class='c1'&gt;# Example for VirtualBox:&lt;/span&gt;
-  &lt;span class='c1'&gt;#&lt;/span&gt;
-  &lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;vm&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;provider&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;virtualbox&amp;quot;&lt;/span&gt; &lt;span class='k'&gt;do&lt;/span&gt; &lt;span class='o'&gt;|&lt;/span&gt;&lt;span class='n'&gt;vb&lt;/span&gt;&lt;span class='o'&gt;|&lt;/span&gt;
-    &lt;span class='c1'&gt;# Don&amp;#39;t boot with headless mode&lt;/span&gt;
-    &lt;span class='c1'&gt;# vb.gui = true&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# Share an additional folder to the guest VM. The first argument is&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# the path on the host to the actual folder. The second argument is&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# the path on the guest to mount the folder. And the optional third&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# argument is a set of non-required options.&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# config.vm.synced_folder &amp;quot;../data&amp;quot;, &amp;quot;/vagrant_data&amp;quot;&lt;/span&gt;
 
-    &lt;span class='c1'&gt;# Use VBoxManage to customize the VM. For example to change memory:&lt;/span&gt;
-    &lt;span class='n'&gt;vb&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;customize&lt;/span&gt; &lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;modifyvm&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='ss'&gt;:id&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;--memory&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='no'&gt;BOX_MEMORY&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# Provider-specific configuration so you can fine-tune various&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# backing providers for Vagrant. These expose provider-specific options.&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# Example for VirtualBox:&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;#&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;provider&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;virtualbox&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vb&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# Don&amp;#39;t boot with headless mode&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# vb.gui = true&lt;/span&gt;
 
-    &lt;span class='c1'&gt;# Allow vm to directly access the hosts pci hardware&lt;/span&gt;
-    &lt;span class='c1'&gt;# https://www.virtualbox.org/manual/ch09.html#pcipassthrough&lt;/span&gt;
-    &lt;span class='c1'&gt;# vb.customize [&amp;quot;modifyvm&amp;quot;, :id, &amp;quot;--pciattach&amp;quot;, &amp;lt;CPU-architecture supported id.&amp;gt;]&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# Use VBoxManage to customize the VM. For example to change memory:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;vb&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;customize&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;modifyvm&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;--memory&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;BOX_MEMORY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
 
-  &lt;span class='k'&gt;end&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# Allow vm to directly access the hosts pci hardware&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# https://www.virtualbox.org/manual/ch09.html#pcipassthrough&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# vb.customize [&amp;quot;modifyvm&amp;quot;, :id, &amp;quot;--pciattach&amp;quot;, &amp;lt;CPU-architecture supported id.&amp;gt;]&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
   
-  &lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;vm&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;provision&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;shell&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='ss'&gt;path&lt;/span&gt;&lt;span class='p'&gt;:&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;get-linux-kernel.sh&amp;quot;&lt;/span&gt;
-&lt;span class='k'&gt;end&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;provision&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;shell&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;get-linux-kernel.sh&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;After defining our Vagrantfile, we setup a shell provisioner to automate our installation of our system.&lt;/p&gt;
 
 &lt;p&gt;get-linux-kernel.sh&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;&lt;span class='c'&gt;#!/bin/bash&lt;/span&gt;
 
-&lt;span class='c'&gt;# locate our most up to date preempt_rt kernel patch, default to 3.14 if not set&lt;/span&gt;
-&lt;span class='nv'&gt;PREEMPT_RT_VERSION&lt;/span&gt;&lt;span class='o'&gt;=&lt;/span&gt;&lt;span class='k'&gt;${&lt;/span&gt;&lt;span class='nv'&gt;PREEMPT_RT_VERSION&lt;/span&gt;&lt;span class='k'&gt;:-&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;3.14.12-rt9&amp;quot;&lt;/span&gt;&lt;span class='k'&gt;}&lt;/span&gt;
-&lt;span class='c'&gt;# the linux kernel must match the patch version.&lt;/span&gt;
-&lt;span class='nv'&gt;LINUX_KERNEL_VERSION&lt;/span&gt;&lt;span class='o'&gt;=&lt;/span&gt;&lt;span class='k'&gt;${&lt;/span&gt;&lt;span class='nv'&gt;PREEMPT_RT_VERSION&lt;/span&gt;&lt;span class='k'&gt;}&lt;/span&gt;
-&lt;span class='c'&gt;# to ensure our kernel does not contain any malware, we grab the signer&amp;#39;s public key &lt;/span&gt;
-&lt;span class='nv'&gt;KERNEL_GPG_KEY&lt;/span&gt;&lt;span class='o'&gt;=&lt;/span&gt;&lt;span class='k'&gt;${&lt;/span&gt;&lt;span class='nv'&gt;KERNEL_GPG_KEY&lt;/span&gt;&lt;span class='k'&gt;:-&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;00411886&amp;quot;&lt;/span&gt;&lt;span class='k'&gt;}&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;c&quot;&gt;#!/bin/bash&lt;/span&gt;
 
-&lt;span class='nb'&gt;echo&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;GET KERNAL VERSION --&amp;gt; ${PREEMPT_RT_VERSION}&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# locate our most up to date preempt_rt kernel patch, default to 3.14 if not set&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;PREEMPT_RT_VERSION&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PREEMPT_RT_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:-&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;3.14.12-rt9&amp;quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# the linux kernel must match the patch version.&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LINUX_KERNEL_VERSION&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PREEMPT_RT_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# to ensure our kernel does not contain any malware, we grab the signer&amp;#39;s public key &lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;KERNEL_GPG_KEY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;KERNEL_GPG_KEY&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:-&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;00411886&amp;quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;
 
-&lt;span class='c'&gt;# install linux kernel manager ketchup&lt;/span&gt;
-&lt;span class='nb'&gt;echo&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;Attempting to install ketchup kernel manager.&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;GET KERNAL VERSION --&amp;gt; ${PREEMPT_RT_VERSION}&amp;quot;&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# install linux kernel manager ketchup&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Attempting to install ketchup kernel manager.&amp;quot;&lt;/span&gt;
 sudo apt-get install ketchup
-&lt;span class='nb'&gt;cd&lt;/span&gt; /usr/src/kernels
+&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; /usr/src/kernels
 mkdir linux
-&lt;span class='nb'&gt;cd &lt;/span&gt;linux
+&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;linux
 
-&lt;span class='c'&gt;# setup our loading key&lt;/span&gt;
-gpg --recv-keys &lt;span class='k'&gt;${&lt;/span&gt;&lt;span class='nv'&gt;KERNEL_GPG_KEY&lt;/span&gt;&lt;span class='k'&gt;}&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# setup our loading key&lt;/span&gt;
+gpg --recv-keys &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;KERNEL_GPG_KEY&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;
 
-&lt;span class='c'&gt;# grab the kernel source &lt;/span&gt;
-&lt;span class='nb'&gt;echo&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;Grabbing kernel version ${LINUX_KERNEL_VERSION}... (may take a while to grab source files)&amp;quot;&lt;/span&gt;
-ketchup -r -G &lt;span class='k'&gt;${&lt;/span&gt;&lt;span class='nv'&gt;PREEMPT_RT_VERSION&lt;/span&gt;&lt;span class='k'&gt;}&lt;/span&gt; &amp;gt; /dev/null 2&amp;gt;&lt;span class='p'&gt;&amp;amp;&lt;/span&gt;1
-&lt;span class='nb'&gt;echo&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;Completed linux kernel source download. Now you can go configure it.&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# grab the kernel source &lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Grabbing kernel version ${LINUX_KERNEL_VERSION}... (may take a while to grab source files)&amp;quot;&lt;/span&gt;
+ketchup -r -G &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PREEMPT_RT_VERSION&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt; &amp;gt; /dev/null 2&amp;gt;&lt;span class=&quot;p&quot;&gt;&amp;amp;&lt;/span&gt;1
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Completed linux kernel source download. Now you can go configure it.&amp;quot;&lt;/span&gt;
 
-&lt;span class='c'&gt;# NOTE: ketchup command above just automating this process below...&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# NOTE: ketchup command above just automating this process below...&lt;/span&gt;
 
-&lt;span class='c'&gt;# get and apply the preempt-rt patch&lt;/span&gt;
-&lt;span class='c'&gt;# wget http://www.kernel.org/pub/linux/kernel/v3.14/linux-3.14.12.tar.bz2 &amp;gt; /dev/null 2&amp;gt;&amp;amp;1 &lt;/span&gt;
-&lt;span class='c'&gt;# wget https://www.kernel.org/pub/linux/kernel/projects/rt/3.14/patch-3.14.12-rt9.patch.gz &amp;gt; /dev/null 2&amp;gt;&amp;amp;1  &lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# get and apply the preempt-rt patch&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# wget http://www.kernel.org/pub/linux/kernel/v3.14/linux-3.14.12.tar.bz2 &amp;gt; /dev/null 2&amp;gt;&amp;amp;1 &lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# wget https://www.kernel.org/pub/linux/kernel/projects/rt/3.14/patch-3.14.12-rt9.patch.gz &amp;gt; /dev/null 2&amp;gt;&amp;amp;1  &lt;/span&gt;
 
-&lt;span class='c'&gt;# tar -jxvf linux-3.14.12.tar.bz2&lt;/span&gt;
-&lt;span class='c'&gt;# mv linux-3.14.12 linux-3.14.12-rt9&lt;/span&gt;
-&lt;span class='c'&gt;# cd linux-3.14.12-rt9&lt;/span&gt;
-&lt;span class='c'&gt;# zcat ../patch-3.14.12-rt9.patch.gz | patch -p1&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# tar -jxvf linux-3.14.12.tar.bz2&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# mv linux-3.14.12 linux-3.14.12-rt9&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# cd linux-3.14.12-rt9&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# zcat ../patch-3.14.12-rt9.patch.gz | patch -p1&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;With the patched kernel setup, we can go configure and test the installation to our leisure. First we need to login to our vagrant box.&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;vagrant ssh
+
+&lt;p&gt;With the patched kernel setup, we can go configure and test the installation to our leisure.
+First we need to login to our vagrant box.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;vagrant ssh
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Then we perform the kernel setup steps listed below.&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;&lt;span class='nb'&gt;cd &lt;/span&gt;linux-3.14.12-rt9
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;&lt;span class='c'&gt;# copy over your current kernel config file&lt;/span&gt;
-cp /boot/config-&lt;span class='sb'&gt;`&lt;/span&gt;uname -r&lt;span class='sb'&gt;`&lt;/span&gt; .config
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;&lt;span class='c'&gt;# run menuconfig&lt;/span&gt;
-&lt;span class='c'&gt;# I ran into an issue where I was missing library ncurses&lt;/span&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;linux-3.14.12-rt9
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;c&quot;&gt;# copy over your current kernel config file&lt;/span&gt;
+cp /boot/config-&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;uname -r&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt; .config
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;c&quot;&gt;# run menuconfig&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# I ran into an issue where I was missing library ncurses&lt;/span&gt;
 sudo apt-get install libncurses5-dev
 make menuconfig 
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;You should see a text based configuration screen for the kernel. Follow the steps outlined below to install your kernel. Lets go completely preemptable.&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='text'&gt;Processor type and features  ---&amp;gt;
+
+&lt;p&gt;You should see a text based configuration screen for the kernel. Follow the steps outlined below to install your kernel.
+Lets go completely preemptable. &lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;text&quot;&gt;Processor type and features  ---&amp;gt;
       Preemption Mode (Complete Preemption (Real-Time))  ---&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;You probably want some debugging to see what blows up.&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='text'&gt;Kernel hacking  ---&amp;gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;text&quot;&gt;Kernel hacking  ---&amp;gt;
    [*] Tracers  ---&amp;gt;
       --- Tracers
       [*]   Kernel Function Tracer
@@ -175,25 +320,32 @@ make menuconfig
       [*] Sleep inside atomic section checking
       [*] Locking API boot-time self-tests
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;&lt;img src=&quot;https://s3-us-west-2.amazonaws.com/nickma.com/Kernelconfig-2014-07-19+at+12.42.42+PM.png&quot; alt=&quot;Config Page&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://s3-us-west-2.amazonaws.com/nickma.com/Screen+Shot+2014-07-19+at+1.05.54+PM.png&quot; alt=&quot;Preempt RT Flag&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;A note from &lt;a href=&quot;https://www.osadl.org/Realtime-Preempt-Kernel.kernel-rt.0.html#ubuntu&quot;&gt;www.osadl.com&lt;/a&gt;: Should you happen to be the proud owner of a multi-core processor, be sure to specify the -j &lt;code&gt;&amp;lt;jobs&lt;/code&gt;&amp;gt; option of make where &lt;code&gt;&amp;lt;jobs&lt;/code&gt;&amp;gt; is twice the number of cores your processor has, as this will speed up kernel compilation considerably.&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;&lt;span class='c'&gt;# takes a while to build the things, good time to coffee break&lt;/span&gt;
-&lt;span class='c'&gt;# add the -j if you know how many cores you have.&lt;/span&gt;
+&lt;p&gt;A note from [www.osadl.com] (https://www.osadl.org/Realtime-Preempt-Kernel.kernel-rt.0.html#ubuntu):
+Should you happen to be the proud owner of a multi-core processor, be sure to specify the -j &lt;code&gt;&amp;lt;jobs&lt;/code&gt;&amp;gt; option of make where &lt;code&gt;&amp;lt;jobs&lt;/code&gt;&amp;gt; is twice the number of cores your processor has, as this will speed up kernel compilation considerably.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;c&quot;&gt;# takes a while to build the things, good time to coffee break&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# add the -j if you know how many cores you have.&lt;/span&gt;
 sudo make
 
-&lt;span class='c'&gt;# then we install the built kernel&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# then we install the built kernel&lt;/span&gt;
 make modules_install install
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;At this point you should be able to test out the kernel, perhaps in a later post if I find the bandwidth.&lt;/p&gt;
+
+&lt;p&gt;At this point you should be able to test out the kernel, perhaps in a later post if I find the bandwidth. &lt;/p&gt;
 
 &lt;h3 id=&quot;alternative&quot;&gt;Alternative&lt;/h3&gt;
+&lt;p&gt;Near the end of my research I found out that ubuntu has its own linux-realtime that can be apt-get installed, though only for certain versions, you may end up on an older version of the kernel.
+This is a far simpler solution on [ubuntu/RealTime] (https://wiki.ubuntu.com/RealTime).&lt;/p&gt;
 
-&lt;p&gt;Near the end of my research I found out that ubuntu has its own linux-realtime that can be apt-get installed, though only for certain versions, you may end up on an older version of the kernel. This is a far simpler solution on &lt;a href=&quot;https://wiki.ubuntu.com/RealTime&quot;&gt;ubuntu/RealTime&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;If you want to try this method, its easy! Since we are on a virtual machine, just kill it off with vagrant destroy and rebuild it with the correct base box.
+Just replace the provisioning script with the procedures on link above. &lt;/p&gt;
 
-&lt;p&gt;If you want to try this method, its easy! Since we are on a virtual machine, just kill it off with vagrant destroy and rebuild it with the correct base box. Just replace the provisioning script with the procedures on link above.&lt;/p&gt;</description>
+</description>
                 <link>http://www.nickma.com/tutorial/2014/07/19/testing-custom-linux-kernels-on-vagrant</link>
                 <guid>http://www.nickma.com/tutorial/2014/07/19/testing-custom-linux-kernels-on-vagrant</guid>
                 <pubDate>2014-07-19T00:00:00-07:00</pubDate>
@@ -201,118 +353,138 @@ make modules_install install
 
         <item>
                 <title>Wordpress on Dokku with Vagrant Devo.</title>
-                <description>&lt;p&gt;For a new project I am taking on, I wanted to have my own Platform as a Service (PaaS) that has a git push deploy hook like Heroku. There are a few open source projects out there that are currently trying to replicate Heroku, such as &lt;a href=&quot;https://github.com/flynn/flynn&quot;&gt;Flynn&lt;/a&gt;.&lt;/p&gt;
+                <description>
+&lt;p&gt;For a new project I am taking on, I wanted to have my own Platform as a Service (PaaS) that has a git push deploy hook like Heroku.
+There are a few open source projects out there that are currently trying to replicate Heroku, such as [Flynn] (https://github.com/flynn/flynn). &lt;/p&gt;
 
-&lt;p&gt;Flynn is trying to become an open source Heroku replacement, but it has too many features that are overkill for our simple applications. I only want the git push deploy for now, this is where &lt;a href=&quot;https://github.com/progrium/dokku&quot;&gt;Dokku&lt;/a&gt; comes in.&lt;/p&gt;
+&lt;p&gt;Flynn is trying to become an open source Heroku replacement, but it has too many features that are overkill for our simple applications. 
+I only want the git push deploy for now, this is where [Dokku] (https://github.com/progrium/dokku) comes in. &lt;/p&gt;
 
-&lt;p&gt;Dokku is a very hackable and has very small code base, making it much easier to understand. I plan to use Vagrant to setup a local Dokku instance.&lt;/p&gt;
+&lt;p&gt;Dokku is a very hackable and has very small code base, making it much easier to understand. I plan to use Vagrant to setup a local Dokku instance. &lt;/p&gt;
 
-&lt;p&gt;To start a development environment I choose to use Vagrant, which is a tool that wraps development environments inside a virtual machine using VirtualBox, VMware, and AWS, and etc. (Full list on the official Vagrant docs). After a few attempts fiddling with my own opts and constantly being hit with . The first step is to install Vagrant and the virtual machine provider (VirtualBox in my case), the installation will vary, so make sure to check the Vagrant docs for your platform.&lt;/p&gt;
+&lt;p&gt;To start a development environment I choose to use Vagrant, which is a tool that wraps development environments inside a virtual machine using VirtualBox, VMware, and AWS, and etc. (Full list on the official Vagrant docs). After a few attempts fiddling with my own opts and constantly being hit with .
+The first step is to install Vagrant and the virtual machine provider (VirtualBox in my case), the installation will vary, so make sure to check the Vagrant docs for your platform. &lt;/p&gt;
 
-&lt;p&gt;I am currently reading the book &lt;a href=&quot;http://www.amazon.com/gp/product/1449335837/ref=as_li_tl?ie=UTF8&amp;amp;camp=1789&amp;amp;creative=390957&amp;amp;creativeASIN=1449335837&amp;amp;linkCode=as2&amp;amp;tag=nisbl00c-20&amp;amp;linkId=E3QWJ4CWFM7XNHFW&quot;&gt;Vagrant: Up and Running&lt;/a&gt; to learn Vagrant as I go along. This is a pretty detailed book written by the author of Vagrant, it contains all the details you need to start using Vagrant properly. If bedside reading is not your thing, don’t worry, this tutorial provides a Vagrant configuration so you don’t need to touch anything.&lt;/p&gt;
+&lt;p&gt;I am currently reading the book &lt;a href=&quot;http://www.amazon.com/gp/product/1449335837/ref=as_li_tl?ie=UTF8&amp;amp;camp=1789&amp;amp;creative=390957&amp;amp;creativeASIN=1449335837&amp;amp;linkCode=as2&amp;amp;tag=nisbl00c-20&amp;amp;linkId=X7AAEEENEHJCKGGL&quot;&gt;Vagrant: Up and Running&lt;/a&gt;: &lt;/p&gt;
 
-&lt;h3 id=&quot;what_you_need&quot;&gt;What You Need&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;http://www.amazon.com/gp/product/1449335837/ref=as_li_tl?ie=UTF8&amp;amp;camp=1789&amp;amp;creative=390957&amp;amp;creativeASIN=1449335837&amp;amp;linkCode=as2&amp;amp;tag=nisbl00c-20&amp;amp;linkId=X7AAEEENEHJCKGGL&quot;&gt;&lt;img border=&quot;0&quot; width=&quot;150px&quot; src=&quot;http://ecx.images-amazon.com/images/I/51t8vBfbyhL.jpg&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;This is a pretty detailed book written by the author of Vagrant, it contains all the details you need to start using Vagrant properly. If bedside reading is not your thing, don&amp;#8217;t worry, this tutorial provides a Vagrant configuration so you don&amp;#8217;t need to touch anything. &lt;/p&gt;
+
+&lt;h3 id=&quot;what-you-need&quot;&gt;What You Need&lt;/h3&gt;
 
 &lt;p&gt;Before we begin our tutorial, please make sure you have the following installed:&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;http://www.vagrantup.com/&quot;&gt;Vagrant&lt;/a&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;a href=&quot;https://www.virtualbox.org/&quot;&gt;Virtualbox&lt;/a&gt; (or any other provider supported by Vagrant)&lt;/li&gt;
+  &lt;li&gt;[Vagrant] (http://www.vagrantup.com/) &lt;/li&gt;
+  &lt;li&gt;[Virtualbox] (https://www.virtualbox.org/) (or any other provider supported by Vagrant)&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;You can go on their official webpages for most troubleshooting information.&lt;/p&gt;
 
-&lt;h3 id=&quot;vagrant_developement_setup&quot;&gt;Vagrant Developement Setup&lt;/h3&gt;
+&lt;h3 id=&quot;vagrant-developement-setup&quot;&gt;Vagrant Developement Setup&lt;/h3&gt;
 
-&lt;p&gt;We first get our working folder setup, then setup our Vagrant.&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;&lt;span class='nv'&gt;$ &lt;/span&gt;git clone https://github.com/mhoofman/wordpress-heroku wp-app
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;&lt;span class='nv'&gt;$ &lt;/span&gt;&lt;span class='nb'&gt;cd &lt;/span&gt;wp-app
+&lt;p&gt;We first get our working folder setup, then setup our Vagrant. &lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git clone https://github.com/mhoofman/wordpress-heroku wp-app
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Following up, we setup our devo environment.&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;&lt;span class='nv'&gt;$ &lt;/span&gt;vagrant init
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;wp-app
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;You should now see a file called &lt;a href=&quot;https://docs.vagrantup.com/v2/vagrantfile/index.html&quot;&gt;Vagrantfile&lt;/a&gt; in your project directory. Which is a configuration file for launching and provisioning VMs. Next we will use the following configuration to setup our devo environment.&lt;/p&gt;
 
-&lt;p&gt;The following configuration file is modified from the Dokku project repo, which will allow us to configure our virtual machine.&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='ruby'&gt;&lt;span class='no'&gt;VAGRANTFILE_API_VERSION&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;2&amp;quot;&lt;/span&gt;
+&lt;p&gt;Following up, we setup our devo environment. &lt;/p&gt;
 
-&lt;span class='c1'&gt;# locate requisite ENV variables or default&lt;/span&gt;
-&lt;span class='no'&gt;BOX_NAME&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;BOX_NAME&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;trusty32&amp;quot;&lt;/span&gt;
-&lt;span class='no'&gt;BOX_URI&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;BOX_URI&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box&amp;quot;&lt;/span&gt; 
-&lt;span class='no'&gt;BOX_MEMORY&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;BOX_MEMORY&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;768&amp;quot;&lt;/span&gt;
-&lt;span class='no'&gt;DOKKU_DOMAIN&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;DOKKU_DOMAIN&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;dokku.me&amp;quot;&lt;/span&gt;
-&lt;span class='no'&gt;DOKKU_IP&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;ENV&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;DOKKU_IP&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt; &lt;span class='o'&gt;||&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;10.0.0.2&amp;quot;&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;vagrant init
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;span class='no'&gt;Vagrant&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;configure&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='no'&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class='p'&gt;)&lt;/span&gt; &lt;span class='k'&gt;do&lt;/span&gt; &lt;span class='o'&gt;|&lt;/span&gt;&lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;|&lt;/span&gt;
-  &lt;span class='c1'&gt;# define the vm box we need to use to config dokku&lt;/span&gt;
-  &lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;vm&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;box&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;BOX_NAME&lt;/span&gt;
+&lt;p&gt;You should now see a file called [Vagrantfile] (https://docs.vagrantup.com/v2/vagrantfile/index.html) in your project directory. Which is a configuration file for launching and provisioning VMs. 
+Next we will use the following configuration to setup our devo environment. &lt;/p&gt;
+
+&lt;p&gt;The following configuration file is modified from the Dokku project repo, which will allow us to configure our virtual machine. &lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;ruby&quot;&gt;&lt;span class=&quot;no&quot;&gt;VAGRANTFILE_API_VERSION&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;2&amp;quot;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# locate requisite ENV variables or default&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;BOX_NAME&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;BOX_NAME&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;trusty32&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;BOX_URI&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;BOX_URI&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box&amp;quot;&lt;/span&gt; 
+&lt;span class=&quot;no&quot;&gt;BOX_MEMORY&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;BOX_MEMORY&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;768&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;DOKKU_DOMAIN&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;DOKKU_DOMAIN&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;dokku.me&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;DOKKU_IP&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;DOKKU_IP&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;10.0.0.2&amp;quot;&lt;/span&gt;
+
+&lt;span class=&quot;no&quot;&gt;Vagrant&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;configure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;VAGRANTFILE_API_VERSION&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# define the vm box we need to use to config dokku&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;box&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;BOX_NAME&lt;/span&gt;
   
-  &lt;span class='c1'&gt;# tell vagrant where to find the box if it can&amp;#39;t locate it by the name&lt;/span&gt;
-  &lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;vm&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;box_url&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='no'&gt;BOX_URI&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# tell vagrant where to find the box if it can&amp;#39;t locate it by the name&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;box_url&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;BOX_URI&lt;/span&gt;
 
-  &lt;span class='c1'&gt;# tells vagrant to sync this folder with /root/dokku/ on the virtual machine &lt;/span&gt;
-  &lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;vm&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;synced_folder&lt;/span&gt; &lt;span class='no'&gt;File&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;dirname&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='bp'&gt;__FILE__&lt;/span&gt;&lt;span class='p'&gt;),&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;/root/dokku&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# tells vagrant to sync this folder with /root/dokku/ on the virtual machine &lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;synced_folder&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;File&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dirname&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;__FILE__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;/root/dokku&amp;quot;&lt;/span&gt;
 
-  &lt;span class='c1'&gt;# configure the vm to forward its 80 port to 8080&lt;/span&gt;
-  &lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;vm&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;network&lt;/span&gt; &lt;span class='ss'&gt;:forwarded_port&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='ss'&gt;guest&lt;/span&gt;&lt;span class='p'&gt;:&lt;/span&gt; &lt;span class='mi'&gt;80&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='ss'&gt;host&lt;/span&gt;&lt;span class='p'&gt;:&lt;/span&gt; &lt;span class='mi'&gt;8080&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# configure the vm to forward its 80 port to 8080&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;network&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:forwarded_port&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;guest&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;80&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;host&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;8080&lt;/span&gt;
 
-  &lt;span class='c1'&gt;# configure the vm&amp;#39;s name&lt;/span&gt;
-  &lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;vm&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;hostname&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;&lt;/span&gt;&lt;span class='si'&gt;#{&lt;/span&gt;&lt;span class='no'&gt;DOKKU_DOMAIN&lt;/span&gt;&lt;span class='si'&gt;}&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# configure the vm&amp;#39;s name&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hostname&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;DOKKU_DOMAIN&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
 
-  &lt;span class='c1'&gt;# From Vagrant doc&amp;#39;s: &lt;/span&gt;
-  &lt;span class='c1'&gt;# Private networks allow you to access your guest machine only from your own machine &lt;/span&gt;
-  &lt;span class='c1'&gt;# disallows public accessible, specify ip to your DOKKU_IP&lt;/span&gt;
-  &lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;vm&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;network&lt;/span&gt; &lt;span class='ss'&gt;:private_network&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='ss'&gt;ip&lt;/span&gt;&lt;span class='p'&gt;:&lt;/span&gt; &lt;span class='no'&gt;DOKKU_IP&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# From Vagrant doc&amp;#39;s: &lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# Private networks allow you to access your guest machine only from your own machine &lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# disallows public accessible, specify ip to your DOKKU_IP&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;network&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:private_network&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;ip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;DOKKU_IP&lt;/span&gt;
 
-  &lt;span class='c1'&gt;# tell vagrant to use virtualbox for our purposes, &lt;/span&gt;
-  &lt;span class='c1'&gt;# we can have multiple provider blocks for as many providers as we need.&lt;/span&gt;
-  &lt;span class='n'&gt;config&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;vm&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;provider&lt;/span&gt; &lt;span class='ss'&gt;:virtualbox&lt;/span&gt; &lt;span class='k'&gt;do&lt;/span&gt; &lt;span class='o'&gt;|&lt;/span&gt;&lt;span class='n'&gt;vb&lt;/span&gt;&lt;span class='o'&gt;|&lt;/span&gt;
-    &lt;span class='c1'&gt;# this option makes the NAT engine use the host&amp;#39;s resolver mechanisms to handle DNS requests &lt;/span&gt;
-    &lt;span class='c1'&gt;# which essentially means that we can specify domain &amp;quot;dokku.me&amp;quot; to be resolved by our local hosts file &lt;/span&gt;
-    &lt;span class='n'&gt;vb&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;customize&lt;/span&gt; &lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;modifyvm&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='ss'&gt;:id&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;--natdnshostresolver1&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;on&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt;
-    &lt;span class='c1'&gt;# set the memory of the virtualbox&lt;/span&gt;
-    &lt;span class='n'&gt;vb&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='n'&gt;customize&lt;/span&gt; &lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;modifyvm&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='ss'&gt;:id&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;--memory&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='no'&gt;BOX_MEMORY&lt;/span&gt;&lt;span class='o'&gt;]&lt;/span&gt;
-  &lt;span class='k'&gt;end&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# tell vagrant to use virtualbox for our purposes, &lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# we can have multiple provider blocks for as many providers as we need.&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;provider&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:virtualbox&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vb&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# this option makes the NAT engine use the host&amp;#39;s resolver mechanisms to handle DNS requests &lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# which essentially means that we can specify domain &amp;quot;dokku.me&amp;quot; to be resolved by our local hosts file &lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;vb&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;customize&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;modifyvm&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;--natdnshostresolver1&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;on&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# set the memory of the virtualbox&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;vb&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;customize&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;modifyvm&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;--memory&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;BOX_MEMORY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
   
-  &lt;span class='c1'&gt;# no vagrant provisioning because we setup Dokku and let it provision our wp-app for us.&lt;/span&gt;
-  &lt;span class='c1'&gt;# install Dokku on the vagrant vm with bootstrap.sh.&lt;/span&gt;
-&lt;span class='k'&gt;end&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# no vagrant provisioning because we setup Dokku and let it provision our wp-app for us.&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# install Dokku on the vagrant vm with bootstrap.sh.&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Next we create a bash script to bootstrap our Vagrant machine. Using a script creates a deterministic provisioning process to avoid future headaches. Create a file called bootstrap.sh with the following contents.&lt;/p&gt;
+
+&lt;p&gt;Next we create a bash script to bootstrap our Vagrant machine. Using a script creates a deterministic provisioning process to avoid future headaches. 
+Create a file called bootstrap.sh with the following contents. &lt;/p&gt;
 
 &lt;p&gt;bootstrap.sh&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='bash'&gt;&lt;span class='c'&gt;#!/bin/bash&lt;/span&gt;
 
-&lt;span class='c'&gt;# reference of bootstrap.sh of https://github.com/RyanBalfanz/dokku-vagrant-example&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;c&quot;&gt;#!/bin/bash&lt;/span&gt;
 
-&lt;span class='c'&gt;# add our envs&lt;/span&gt;
-&lt;span class='nv'&gt;DB_PLUGIN&lt;/span&gt;&lt;span class='o'&gt;=&lt;/span&gt;postgresql
+&lt;span class=&quot;c&quot;&gt;# reference of bootstrap.sh of https://github.com/RyanBalfanz/dokku-vagrant-example&lt;/span&gt;
 
-&lt;span class='c'&gt;# setup the vmachine if it hasn&amp;#39;t been done already&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# add our envs&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;DB_PLUGIN&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;postgresql
+
+&lt;span class=&quot;c&quot;&gt;# setup the vmachine if it hasn&amp;#39;t been done already&lt;/span&gt;
 vagrant up
 
-&lt;span class='c'&gt;# run commands to build Dokku on our vagrant box&lt;/span&gt;
-&lt;span class='c'&gt;# vagrant ssh will automagtocally open up an interactive terminal to our vm.&lt;/span&gt;
-&lt;span class='c'&gt;# the &amp;#39;--&amp;#39; means the end of a command, so vagrant ssh will not take any more arguments.&lt;/span&gt;
-&lt;span class='c'&gt;# once we vagrant ssh, we install Dokku (commands from the Dokku github page).&lt;/span&gt;
-vagrant ssh -- &lt;span class='s2'&gt;&amp;quot;wget -qO- https://raw.github.com/progrium/dokku/v0.2.3/bootstrap.sh | sudo DOKKU_TAG=v0.2.3 bash&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# run commands to build Dokku on our vagrant box&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# vagrant ssh will automagtocally open up an interactive terminal to our vm.&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# the &amp;#39;--&amp;#39; means the end of a command, so vagrant ssh will not take any more arguments.&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# once we vagrant ssh, we install Dokku (commands from the Dokku github page).&lt;/span&gt;
+vagrant ssh -- &lt;span class=&quot;s2&quot;&gt;&amp;quot;wget -qO- https://raw.github.com/progrium/dokku/v0.2.3/bootstrap.sh | sudo DOKKU_TAG=v0.2.3 bash&amp;quot;&lt;/span&gt;
 
-&lt;span class='c'&gt;# run commands to install our Dokku postgresql plugin &lt;/span&gt;
-&lt;span class='nv'&gt;PLUGIN_FOUND&lt;/span&gt;&lt;span class='o'&gt;=&lt;/span&gt;&lt;span class='sb'&gt;`&lt;/span&gt;vagrant ssh -- &lt;span class='s2'&gt;&amp;quot;test -d /var/lib/dokku/plugins/${DB_PLUGIN} &amp;amp;&amp;amp; echo 0 || echo 1&amp;quot;&lt;/span&gt;&lt;span class='sb'&gt;`&lt;/span&gt;
-&lt;span class='k'&gt;if&lt;/span&gt; &lt;span class='o'&gt;[&lt;/span&gt; &lt;span class='k'&gt;${&lt;/span&gt;&lt;span class='nv'&gt;PLUGIN_FOUND&lt;/span&gt;&lt;span class='k'&gt;}&lt;/span&gt; -eq 0 &lt;span class='o'&gt;]&lt;/span&gt;&lt;span class='p'&gt;;&lt;/span&gt; &lt;span class='k'&gt;then&lt;/span&gt;
-&lt;span class='k'&gt;    &lt;/span&gt;&lt;span class='nb'&gt;echo&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;${DB_PLUGIN} plugin found! Skipping installation.&amp;quot;&lt;/span&gt; 
-&lt;span class='k'&gt;else&lt;/span&gt;
-&lt;span class='k'&gt;    &lt;/span&gt;&lt;span class='nb'&gt;echo&lt;/span&gt; &lt;span class='s2'&gt;&amp;quot;${DB_PLUGIN} plugin does not exist! Installing...&amp;quot;&lt;/span&gt;
-    &lt;span class='c'&gt;# install ${DB_PLUGIN} plugin on our Dokku, commands from the plugin github page.&lt;/span&gt;
-    vagrant ssh -- &lt;span class='s2'&gt;&amp;quot;cd /var/lib/dokku/plugins &amp;amp;&amp;amp; sudo git clone https://github.com/Kloadut/dokku-pg-plugin ${DB_PLUGIN} &amp;amp;&amp;amp; sudo dokku plugins-install&amp;quot;&lt;/span&gt;
-&lt;span class='k'&gt;fi&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# run commands to install our Dokku postgresql plugin &lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;PLUGIN_FOUND&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;vagrant ssh -- &lt;span class=&quot;s2&quot;&gt;&amp;quot;test -d /var/lib/dokku/plugins/${DB_PLUGIN} &amp;amp;&amp;amp; echo 0 || echo 1&amp;quot;&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PLUGIN_FOUND&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt; -eq 0 &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;${DB_PLUGIN} plugin found! Skipping installation.&amp;quot;&lt;/span&gt; 
+&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;${DB_PLUGIN} plugin does not exist! Installing...&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;c&quot;&gt;# install ${DB_PLUGIN} plugin on our Dokku, commands from the plugin github page.&lt;/span&gt;
+    vagrant ssh -- &lt;span class=&quot;s2&quot;&gt;&amp;quot;cd /var/lib/dokku/plugins &amp;amp;&amp;amp; sudo git clone https://github.com/Kloadut/dokku-pg-plugin ${DB_PLUGIN} &amp;amp;&amp;amp; sudo dokku plugins-install&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
 
-&lt;span class='c'&gt;# pass our public key to the dokku machine, this allows us to git push deploy&lt;/span&gt;
-cat ~/.ssh/id_rsa.pub &lt;span class='p'&gt;|&lt;/span&gt; vagrant ssh -- sudo sshcommand acl-add dokku &lt;span class='k'&gt;${&lt;/span&gt;&lt;span class='nv'&gt;USER&lt;/span&gt;&lt;span class='k'&gt;}&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# pass our public key to the dokku machine, this allows us to git push deploy&lt;/span&gt;
+cat ~/.ssh/id_rsa.pub &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; vagrant ssh -- sudo sshcommand acl-add dokku &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;USER&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;At this point your file structure should look like this.&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='text'&gt;$ ls 
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;text&quot;&gt;$ ls 
    |- .git
    |- .htaccess
    |- .vagrant
@@ -322,28 +494,37 @@ cat ~/.ssh/id_rsa.pub &lt;span class='p'&gt;|&lt;/span&gt; vagrant ssh -- sudo s
    |- index.php
    |- ... etc wp files ...
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Next we make bootstrap.sh executable and run it.&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='text'&gt;$ chmod +x bootstrap.sh
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;text&quot;&gt;$ chmod +x bootstrap.sh
 $ ./bootstrap.sh
 $ ... etc Vagrant output ... 
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;It will take a while for the bootstrapper to install and configure vagrant.&lt;/p&gt;
 
-&lt;p&gt;So I highly recommend you go view a &lt;a href=&quot;http://progrium.com/blog/2013/06/19/dokku-the-smallest-paas-implementation-youve-ever-seen/&quot;&gt;video on how Dokku works&lt;/a&gt; by the creator. By the time you finish checking out the video your vagrant vm should be provisioned and you should be ready to push to your devo.&lt;/p&gt;
+&lt;p&gt;It will take a while for the bootstrapper to install and configure vagrant. &lt;/p&gt;
 
-&lt;h3 id=&quot;preparing_to_deploy_to_devo&quot;&gt;Preparing to Deploy to Devo&lt;/h3&gt;
+&lt;p&gt;So I highly recommend you go view a [video on how Dokku works] (http://progrium.com/blog/2013/06/19/dokku-the-smallest-paas-implementation-youve-ever-seen/) by the creator.
+By the time you finish checking out the video your vagrant vm should be provisioned and you should be ready to push to your devo.&lt;/p&gt;
+
+&lt;h3 id=&quot;preparing-to-deploy-to-devo&quot;&gt;Preparing to Deploy to Devo&lt;/h3&gt;
 
 &lt;p&gt;Since we have set our Vagrant config to resolve domains to our native hosts file, we define a few host entries in /etc/hosts.&lt;/p&gt;
 
 &lt;p&gt;/etc/hosts&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='text'&gt;# for local dokku deploy
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;text&quot;&gt;# for local dokku deploy
 10.0.0.2    dokku.me
 10.0.0.2    wp-app.dokku.me
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Finally, we prepare to deploy our app.&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='text'&gt;$ git remote add devo dokku@dokku.me:wp-app
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;text&quot;&gt;$ git remote add devo dokku@dokku.me:wp-app
 $ git push devo master 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='text'&gt;Counting objects: 5127, done.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;text&quot;&gt;Counting objects: 5127, done.
 Delta compression using up to 4 threads.
 Compressing objects: 100% (2643/2643), done.
 Writing objects: 100% (5127/5127), 15.12 MiB | 17.37 MiB/s, done.
@@ -373,11 +554,15 @@ remote: HEAD is now at 2b0ea36... copied over dokku devo vagrantfile.
 To dokku@dokku.me:wp-app
  * [new branch]      master -&amp;gt; master 
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;h4 id=&quot;setting_up_our_database&quot;&gt;Setting Up Our Database&lt;/h4&gt;
+
+&lt;h4 id=&quot;setting-up-our-database&quot;&gt;Setting Up Our Database&lt;/h4&gt;
 
 &lt;p&gt;Before we proceed to test our instance we want a database, so we run some Dokku postgresql commands to create one.&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='text'&gt;$ ssh dokku@dokku.me postgresql:create wp-app
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='text'&gt;-----&amp;gt; Creating /home/dokku/wp-app/ENV
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;text&quot;&gt;$ ssh dokku@dokku.me postgresql:create wp-app
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;text&quot;&gt;-----&amp;gt; Creating /home/dokku/wp-app/ENV
 -----&amp;gt; Setting config vars and restarting wp-app
 DATABASE_URL: postgres://root:ZwCRrphjiQYJ1Pvx@172.17.42.1:49154/db
 -----&amp;gt; Releasing wp-app ...
@@ -400,11 +585,15 @@ DATABASE_URL: postgres://root:ZwCRrphjiQYJ1Pvx@172.17.42.1:49154/db
 
        Url: &amp;#39;postgres://root:ZwCRrphjiQYJ1Pvx@172.17.42.1:49154/db&amp;#39;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Note: Docs for plugin we used for this tutorial can be found here &lt;a href=&quot;https://github.com/Kloadut/dokku-pg-plugin&quot;&gt;Kloadut/dokku-pg-plugin&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Note: Docs for plugin we used for this tutorial can be found here [Kloadut/dokku-pg-plugin] (https://github.com/Kloadut/dokku-pg-plugin).&lt;/p&gt;
 
 &lt;p&gt;Then update Dokku with the environment variable.&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='text'&gt;$ ssh dokku@dokku.me postgresql:link wp-app wp-app 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='text'&gt;-----&amp;gt; Setting config vars and restarting wp-app
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;text&quot;&gt;$ ssh dokku@dokku.me postgresql:link wp-app wp-app 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;text&quot;&gt;-----&amp;gt; Setting config vars and restarting wp-app
 DATABASE_URL: postgres://root:ZwCRrphjiQYJ1Pvx@172.17.42.1:49154/db 
 -----&amp;gt; Releasing wp-app ...
 -----&amp;gt; Release complete!
@@ -416,12 +605,14 @@ DATABASE_URL: postgres://root:ZwCRrphjiQYJ1Pvx@172.17.42.1:49154/db
 
 -----&amp;gt; wp-app linked to postgresql/wp-app database
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Then do the same for the application environment variables.&lt;/p&gt;
 
-&lt;h4 id=&quot;setup_application_environment_variables&quot;&gt;Setup Application Environment Variables&lt;/h4&gt;
+&lt;h4 id=&quot;setup-application-environment-variables&quot;&gt;Setup Application Environment Variables&lt;/h4&gt;
 
 &lt;p&gt;Store unique keys and salts in Dokku environment variables. Wordpress can provide random values &lt;a href=&quot;https://api.wordpress.org/secret-key/1.1/salt/&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='text'&gt;# You can upload all the variables with one config:set command, but I broke them out for clarity.
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;text&quot;&gt;# You can upload all the variables with one config:set command, but I broke them out for clarity.
 # Due to the way Dokku parses config:set key, value pairs, make sure you wrap the values in escaped quotes (\&amp;#39;&amp;#39;&amp;lt;your value here.
 #&amp;gt;&amp;#39;\&amp;#39;) e.g. AUTH_KEY=&amp;#39;&amp;lt;your key&amp;gt;&amp;#39; should be AUTH_KEY=\&amp;#39;&amp;#39;&amp;lt;your key&amp;gt;&amp;#39;\&amp;#39;. 
 
@@ -434,44 +625,56 @@ ssh dokku@dokku.me config:set wp-app SECURE_AUTH_SALT=\&amp;#39;&amp;#39;&amp;lt
 ssh dokku@dokku.me config:set wp-app LOGGED_IN_SALT=\&amp;#39;&amp;#39;&amp;lt;your value here&amp;gt;&amp;#39;\&amp;#39;
 ssh dokku@dokku.me config:set wp-app NONCE_SALT=\&amp;#39;&amp;#39;&amp;lt;your value here&amp;gt;&amp;#39;\&amp;#39;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;One thing we need to do before the database will connect is to edit wp-config.php to accept a port parameter for our psql.&lt;/p&gt;
 
 &lt;p&gt;wp-config.php&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='php'&gt;&lt;span class='cp'&gt;&amp;lt;?php&lt;/span&gt;
-&lt;span class='c1'&gt;// ** Heroku Postgres settings - from Heroku Environment ** //&lt;/span&gt;
-&lt;span class='nv'&gt;$db&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='nb'&gt;parse_url&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='nv'&gt;$_ENV&lt;/span&gt;&lt;span class='p'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;DATABASE_URL&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;]);&lt;/span&gt;
 
-&lt;span class='c1'&gt;// ** MySQL settings - You can get this info from your web host ** //&lt;/span&gt;
-&lt;span class='sd'&gt;/** The name of the database for WordPress */&lt;/span&gt;
-&lt;span class='nb'&gt;define&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='s1'&gt;&amp;#39;DB_NAME&amp;#39;&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='nx'&gt;trim&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='nv'&gt;$db&lt;/span&gt;&lt;span class='p'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;path&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;],&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;/&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;));&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;php&quot;&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?php&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// ** Heroku Postgres settings - from Heroku Environment ** //&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$db&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;parse_url&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$_ENV&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;DATABASE_URL&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
 
-&lt;span class='sd'&gt;/** MySQL database username */&lt;/span&gt;
-&lt;span class='nb'&gt;define&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='s1'&gt;&amp;#39;DB_USER&amp;#39;&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='nv'&gt;$db&lt;/span&gt;&lt;span class='p'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;user&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;]);&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// ** MySQL settings - You can get this info from your web host ** //&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;/** The name of the database for WordPress */&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;define&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;DB_NAME&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;trim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$db&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;path&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;/&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
 
-&lt;span class='sd'&gt;/** MySQL database password */&lt;/span&gt;
-&lt;span class='nb'&gt;define&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='s1'&gt;&amp;#39;DB_PASSWORD&amp;#39;&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='nv'&gt;$db&lt;/span&gt;&lt;span class='p'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;pass&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;]);&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;/** MySQL database username */&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;define&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;DB_USER&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$db&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;user&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
 
-&lt;span class='sd'&gt;/** MySQL hostname */&lt;/span&gt;
-&lt;span class='nb'&gt;define&lt;/span&gt;&lt;span class='p'&gt;(&lt;/span&gt;&lt;span class='s1'&gt;&amp;#39;DB_HOST&amp;#39;&lt;/span&gt;&lt;span class='p'&gt;,&lt;/span&gt; &lt;span class='nv'&gt;$db&lt;/span&gt;&lt;span class='p'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;host&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;]&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;:&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='nv'&gt;$db&lt;/span&gt;&lt;span class='p'&gt;[&lt;/span&gt;&lt;span class='s2'&gt;&amp;quot;port&amp;quot;&lt;/span&gt;&lt;span class='p'&gt;]);&lt;/span&gt;  &lt;span class='c1'&gt;// &amp;lt;---- add .&amp;quot;:&amp;quot;.$db[&amp;quot;port&amp;quot;]&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;/** MySQL database password */&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;define&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;DB_PASSWORD&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$db&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;pass&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
 
-&lt;span class='o'&gt;...&lt;/span&gt; 
+&lt;span class=&quot;sd&quot;&gt;/** MySQL hostname */&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;define&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;DB_HOST&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$db&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;host&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;:&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$db&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;port&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;// &amp;lt;---- add .&amp;quot;:&amp;quot;.$db[&amp;quot;port&amp;quot;]&lt;/span&gt;
+
+&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt; 
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Update the changes in a new branch.&lt;/p&gt;
-&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='text'&gt;$ git checkout -b wp-app-devo
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;text&quot;&gt;$ git checkout -b wp-app-devo
 $ git add wp-config.php
 $ git commit -m &amp;quot;added db port to wp-config.php&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='text'&gt;$ git push devo wp-app-devo:master
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;text&quot;&gt;$ git push devo wp-app-devo:master
 ---&amp;gt; app updates...
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Now you should have a working local environment for you wordpress application to run.&lt;/p&gt;
 
-&lt;p&gt;Test it out at &lt;a href=&quot;http://wp-app.dokku.me&quot;&gt;http://wp-app.dokku.me&lt;/a&gt;. Yata!&lt;/p&gt;
+&lt;p&gt;Now you should have a working local environment for you wordpress application to run. &lt;/p&gt;
 
-&lt;h3 id=&quot;production_setup_bonus&quot;&gt;Production Setup (Bonus)&lt;/h3&gt;
+&lt;p&gt;Test it out at [http://wp-app.dokku.me] (http://wp-app.dokku.me). Yata!&lt;/p&gt;
 
-&lt;p&gt;This post mainly focuses on how to use Vagrant to setup a manageable Dokku developement stack. It is recommended that you play with the local stack to get a feel for how Dokku works before committing to a production stack. This section will just be a quickstart guide for production environments, so I assume you have working knowledge of git and setting up a VPS with a Dokku installation.&lt;/p&gt;
+&lt;h3 id=&quot;production-setup-bonus&quot;&gt;Production Setup (Bonus)&lt;/h3&gt;
 
-&lt;p&gt;The easiest way to get a Dokku host is by following a &lt;a href=&quot;https://www.digitalocean.com/community/tutorials/how-to-use-the-dokku-one-click-digitalocean-image-to-run-a-node-js-app&quot;&gt;1-click setup on digitalocean&lt;/a&gt;. You can also setup Dokku on any server with root access, just follow the instructions listed on the installation readme on &lt;a href=&quot;https://github.com/progrium/dokku&quot;&gt;Dokku&lt;/a&gt;. The steps to setup a working application should be the same.&lt;/p&gt;</description>
+&lt;p&gt;This post mainly focuses on how to use Vagrant to setup a manageable Dokku developement stack. It is recommended that you play with the local stack to get a feel for how Dokku works before committing to a production stack. 
+This section will just be a quickstart guide for production environments, so I assume you have working knowledge of git and setting up a VPS with a Dokku installation.&lt;/p&gt;
+
+&lt;p&gt;The easiest way to get a Dokku host is by following a [1-click setup on digitalocean] (https://www.digitalocean.com/community/tutorials/how-to-use-the-dokku-one-click-digitalocean-image-to-run-a-node-js-app). 
+You can also setup Dokku on any server with root access, just follow the instructions listed on the installation readme on [Dokku] (https://github.com/progrium/dokku).
+The steps to setup a working application should be the same.&lt;/p&gt;
+
+</description>
                 <link>http://www.nickma.com/tutorial/2014/07/02/wordpress-on-dokku-with-vagrant-devo</link>
                 <guid>http://www.nickma.com/tutorial/2014/07/02/wordpress-on-dokku-with-vagrant-devo</guid>
                 <pubDate>2014-07-02T00:00:00-07:00</pubDate>

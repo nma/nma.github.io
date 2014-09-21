@@ -44,6 +44,14 @@
     
       
       	
+      	<li><a href="/Books/index.html">Books</a></li>
+      	
+      
+    
+  
+    
+      
+      	
       	<li><a href="/categories.html">Categories</a></li>
       	
       
@@ -115,8 +123,27 @@
   
     
       <h2>2014</h2>
-      <h3>July</h3>
+      <h3>August</h3>
       <ul>
+    
+  
+    <li><span>August 24, 2014</span> &raquo; <a href="/tutorial/2014/08/24/quickly-vagrant-up-redmine">Quickly Vagrant Up Redmine</a></li>
+  
+    
+          
+        
+          </ul>
+          <h3>July</h3>
+          <ul>
+        
+      
+    
+  
+    
+    
+    
+    
+  
     
   
     <li><span>July 19, 2014</span> &raquo; <a href="/tutorial/2014/07/19/testing-custom-linux-kernels-on-vagrant">Testing Custom Linux Kernels on Vagrant.</a></li>
@@ -198,7 +225,8 @@
     for(var i = 0; i < images.length; ++i) {
       myImage = images[i];
       myImage.onload = function() { 
-        if (this.offsetWidth > this.parentNode.offsetWidth) {
+        console.log(this.parentNode.tagName);
+        if ((this.offsetWidth > this.parentNode.offsetWidth) && (this.parentNode.tagName.toLowerCase() !== 'a')) {
           this.style.width = this.parentNode.offsetWidth + "px";
           this.style.height = "100%";
         }

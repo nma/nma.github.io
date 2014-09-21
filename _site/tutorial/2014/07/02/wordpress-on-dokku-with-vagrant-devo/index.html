@@ -44,6 +44,14 @@
     
       
       	
+      	<li><a href="/Books/index.html">Books</a></li>
+      	
+      
+    
+  
+    
+      
+      	
       	<li><a href="/categories.html">Categories</a></li>
       	
       
@@ -103,122 +111,142 @@
 				<div class="entry-content">
           <div class="social">
             <ul class="list-linear">
-              <li><div class="twitter-tweet"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="NickMa38" data-lang="en">Tweet</a></div></li>
               <li><div class="twitter-follow"><a href="https://twitter.com/NickMa38" class="twitter-follow-button" data-show-count="false" data-lang="en"></a></div></li>
+              <li><div class="twitter-tweet"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="NickMa38" data-lang="en">Tweet</a></div></li>
             </ul>
           </div>
-					<p>For a new project I am taking on, I wanted to have my own Platform as a Service (PaaS) that has a git push deploy hook like Heroku. There are a few open source projects out there that are currently trying to replicate Heroku, such as <a href="https://github.com/flynn/flynn">Flynn</a>.</p>
+					
+<p>For a new project I am taking on, I wanted to have my own Platform as a Service (PaaS) that has a git push deploy hook like Heroku.
+There are a few open source projects out there that are currently trying to replicate Heroku, such as [Flynn] (https://github.com/flynn/flynn). </p>
 
-<p>Flynn is trying to become an open source Heroku replacement, but it has too many features that are overkill for our simple applications. I only want the git push deploy for now, this is where <a href="https://github.com/progrium/dokku">Dokku</a> comes in.</p>
+<p>Flynn is trying to become an open source Heroku replacement, but it has too many features that are overkill for our simple applications. 
+I only want the git push deploy for now, this is where [Dokku] (https://github.com/progrium/dokku) comes in. </p>
 
-<p>Dokku is a very hackable and has very small code base, making it much easier to understand. I plan to use Vagrant to setup a local Dokku instance.</p>
+<p>Dokku is a very hackable and has very small code base, making it much easier to understand. I plan to use Vagrant to setup a local Dokku instance. </p>
 
-<p>To start a development environment I choose to use Vagrant, which is a tool that wraps development environments inside a virtual machine using VirtualBox, VMware, and AWS, and etc. (Full list on the official Vagrant docs). After a few attempts fiddling with my own opts and constantly being hit with . The first step is to install Vagrant and the virtual machine provider (VirtualBox in my case), the installation will vary, so make sure to check the Vagrant docs for your platform.</p>
+<p>To start a development environment I choose to use Vagrant, which is a tool that wraps development environments inside a virtual machine using VirtualBox, VMware, and AWS, and etc. (Full list on the official Vagrant docs). After a few attempts fiddling with my own opts and constantly being hit with .
+The first step is to install Vagrant and the virtual machine provider (VirtualBox in my case), the installation will vary, so make sure to check the Vagrant docs for your platform. </p>
 
-<p>I am currently reading the book <a href="http://www.amazon.com/gp/product/1449335837/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN=1449335837&amp;linkCode=as2&amp;tag=nisbl00c-20&amp;linkId=E3QWJ4CWFM7XNHFW">Vagrant: Up and Running</a> to learn Vagrant as I go along. This is a pretty detailed book written by the author of Vagrant, it contains all the details you need to start using Vagrant properly. If bedside reading is not your thing, don’t worry, this tutorial provides a Vagrant configuration so you don’t need to touch anything.</p>
+<p>I am currently reading the book <a href="http://www.amazon.com/gp/product/1449335837/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN=1449335837&amp;linkCode=as2&amp;tag=nisbl00c-20&amp;linkId=X7AAEEENEHJCKGGL">Vagrant: Up and Running</a>: </p>
 
-<h3 id="what_you_need">What You Need</h3>
+<p><a href="http://www.amazon.com/gp/product/1449335837/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN=1449335837&amp;linkCode=as2&amp;tag=nisbl00c-20&amp;linkId=X7AAEEENEHJCKGGL"><img border="0" width="150px" src="http://ecx.images-amazon.com/images/I/51t8vBfbyhL.jpg" /></a></p>
+
+<p>This is a pretty detailed book written by the author of Vagrant, it contains all the details you need to start using Vagrant properly. If bedside reading is not your thing, don&#8217;t worry, this tutorial provides a Vagrant configuration so you don&#8217;t need to touch anything. </p>
+
+<h3 id="what-you-need">What You Need</h3>
 
 <p>Before we begin our tutorial, please make sure you have the following installed:</p>
 
 <ul>
-<li><a href="http://www.vagrantup.com/">Vagrant</a></li>
-
-<li><a href="https://www.virtualbox.org/">Virtualbox</a> (or any other provider supported by Vagrant)</li>
+  <li>[Vagrant] (http://www.vagrantup.com/) </li>
+  <li>[Virtualbox] (https://www.virtualbox.org/) (or any other provider supported by Vagrant)</li>
 </ul>
 
 <p>You can go on their official webpages for most troubleshooting information.</p>
 
-<h3 id="vagrant_developement_setup">Vagrant Developement Setup</h3>
+<h3 id="vagrant-developement-setup">Vagrant Developement Setup</h3>
 
-<p>We first get our working folder setup, then setup our Vagrant.</p>
-<div class='highlight'><pre><code class='bash'><span class='nv'>$ </span>git clone https://github.com/mhoofman/wordpress-heroku wp-app
-</code></pre></div><div class='highlight'><pre><code class='bash'><span class='nv'>$ </span><span class='nb'>cd </span>wp-app
+<p>We first get our working folder setup, then setup our Vagrant. </p>
+
+<div class="highlight"><pre><code class="bash"><span class="nv">$ </span>git clone https://github.com/mhoofman/wordpress-heroku wp-app
 </code></pre></div>
-<p>Following up, we setup our devo environment.</p>
-<div class='highlight'><pre><code class='bash'><span class='nv'>$ </span>vagrant init
+
+<div class="highlight"><pre><code class="bash"><span class="nv">$ </span><span class="nb">cd </span>wp-app
 </code></pre></div>
-<p>You should now see a file called <a href="https://docs.vagrantup.com/v2/vagrantfile/index.html">Vagrantfile</a> in your project directory. Which is a configuration file for launching and provisioning VMs. Next we will use the following configuration to setup our devo environment.</p>
 
-<p>The following configuration file is modified from the Dokku project repo, which will allow us to configure our virtual machine.</p>
-<div class='highlight'><pre><code class='ruby'><span class='no'>VAGRANTFILE_API_VERSION</span> <span class='o'>=</span> <span class='s2'>&quot;2&quot;</span>
+<p>Following up, we setup our devo environment. </p>
 
-<span class='c1'># locate requisite ENV variables or default</span>
-<span class='no'>BOX_NAME</span> <span class='o'>=</span> <span class='no'>ENV</span><span class='o'>[</span><span class='s2'>&quot;BOX_NAME&quot;</span><span class='o'>]</span> <span class='o'>||</span> <span class='s2'>&quot;trusty32&quot;</span>
-<span class='no'>BOX_URI</span> <span class='o'>=</span> <span class='no'>ENV</span><span class='o'>[</span><span class='s2'>&quot;BOX_URI&quot;</span><span class='o'>]</span> <span class='o'>||</span> <span class='s2'>&quot;https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box&quot;</span> 
-<span class='no'>BOX_MEMORY</span> <span class='o'>=</span> <span class='no'>ENV</span><span class='o'>[</span><span class='s2'>&quot;BOX_MEMORY&quot;</span><span class='o'>]</span> <span class='o'>||</span> <span class='s2'>&quot;768&quot;</span>
-<span class='no'>DOKKU_DOMAIN</span> <span class='o'>=</span> <span class='no'>ENV</span><span class='o'>[</span><span class='s2'>&quot;DOKKU_DOMAIN&quot;</span><span class='o'>]</span> <span class='o'>||</span> <span class='s2'>&quot;dokku.me&quot;</span>
-<span class='no'>DOKKU_IP</span> <span class='o'>=</span> <span class='no'>ENV</span><span class='o'>[</span><span class='s2'>&quot;DOKKU_IP&quot;</span><span class='o'>]</span> <span class='o'>||</span> <span class='s2'>&quot;10.0.0.2&quot;</span>
+<div class="highlight"><pre><code class="bash"><span class="nv">$ </span>vagrant init
+</code></pre></div>
 
-<span class='no'>Vagrant</span><span class='o'>.</span><span class='n'>configure</span><span class='p'>(</span><span class='no'>VAGRANTFILE_API_VERSION</span><span class='p'>)</span> <span class='k'>do</span> <span class='o'>|</span><span class='n'>config</span><span class='o'>|</span>
-  <span class='c1'># define the vm box we need to use to config dokku</span>
-  <span class='n'>config</span><span class='o'>.</span><span class='n'>vm</span><span class='o'>.</span><span class='n'>box</span> <span class='o'>=</span> <span class='no'>BOX_NAME</span>
+<p>You should now see a file called [Vagrantfile] (https://docs.vagrantup.com/v2/vagrantfile/index.html) in your project directory. Which is a configuration file for launching and provisioning VMs. 
+Next we will use the following configuration to setup our devo environment. </p>
+
+<p>The following configuration file is modified from the Dokku project repo, which will allow us to configure our virtual machine. </p>
+
+<div class="highlight"><pre><code class="ruby"><span class="no">VAGRANTFILE_API_VERSION</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
+
+<span class="c1"># locate requisite ENV variables or default</span>
+<span class="no">BOX_NAME</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s2">&quot;BOX_NAME&quot;</span><span class="o">]</span> <span class="o">||</span> <span class="s2">&quot;trusty32&quot;</span>
+<span class="no">BOX_URI</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s2">&quot;BOX_URI&quot;</span><span class="o">]</span> <span class="o">||</span> <span class="s2">&quot;https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box&quot;</span> 
+<span class="no">BOX_MEMORY</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s2">&quot;BOX_MEMORY&quot;</span><span class="o">]</span> <span class="o">||</span> <span class="s2">&quot;768&quot;</span>
+<span class="no">DOKKU_DOMAIN</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s2">&quot;DOKKU_DOMAIN&quot;</span><span class="o">]</span> <span class="o">||</span> <span class="s2">&quot;dokku.me&quot;</span>
+<span class="no">DOKKU_IP</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s2">&quot;DOKKU_IP&quot;</span><span class="o">]</span> <span class="o">||</span> <span class="s2">&quot;10.0.0.2&quot;</span>
+
+<span class="no">Vagrant</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="no">VAGRANTFILE_API_VERSION</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="c1"># define the vm box we need to use to config dokku</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="no">BOX_NAME</span>
   
-  <span class='c1'># tell vagrant where to find the box if it can&#39;t locate it by the name</span>
-  <span class='n'>config</span><span class='o'>.</span><span class='n'>vm</span><span class='o'>.</span><span class='n'>box_url</span> <span class='o'>=</span> <span class='no'>BOX_URI</span>
+  <span class="c1"># tell vagrant where to find the box if it can&#39;t locate it by the name</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">box_url</span> <span class="o">=</span> <span class="no">BOX_URI</span>
 
-  <span class='c1'># tells vagrant to sync this folder with /root/dokku/ on the virtual machine </span>
-  <span class='n'>config</span><span class='o'>.</span><span class='n'>vm</span><span class='o'>.</span><span class='n'>synced_folder</span> <span class='no'>File</span><span class='o'>.</span><span class='n'>dirname</span><span class='p'>(</span><span class='bp'>__FILE__</span><span class='p'>),</span> <span class='s2'>&quot;/root/dokku&quot;</span>
+  <span class="c1"># tells vagrant to sync this folder with /root/dokku/ on the virtual machine </span>
+  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">synced_folder</span> <span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">__FILE__</span><span class="p">),</span> <span class="s2">&quot;/root/dokku&quot;</span>
 
-  <span class='c1'># configure the vm to forward its 80 port to 8080</span>
-  <span class='n'>config</span><span class='o'>.</span><span class='n'>vm</span><span class='o'>.</span><span class='n'>network</span> <span class='ss'>:forwarded_port</span><span class='p'>,</span> <span class='ss'>guest</span><span class='p'>:</span> <span class='mi'>80</span><span class='p'>,</span> <span class='ss'>host</span><span class='p'>:</span> <span class='mi'>8080</span>
+  <span class="c1"># configure the vm to forward its 80 port to 8080</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="ss">:forwarded_port</span><span class="p">,</span> <span class="ss">guest</span><span class="p">:</span> <span class="mi">80</span><span class="p">,</span> <span class="ss">host</span><span class="p">:</span> <span class="mi">8080</span>
 
-  <span class='c1'># configure the vm&#39;s name</span>
-  <span class='n'>config</span><span class='o'>.</span><span class='n'>vm</span><span class='o'>.</span><span class='n'>hostname</span> <span class='o'>=</span> <span class='s2'>&quot;</span><span class='si'>#{</span><span class='no'>DOKKU_DOMAIN</span><span class='si'>}</span><span class='s2'>&quot;</span>
+  <span class="c1"># configure the vm&#39;s name</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">hostname</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="no">DOKKU_DOMAIN</span><span class="si">}</span><span class="s2">&quot;</span>
 
-  <span class='c1'># From Vagrant doc&#39;s: </span>
-  <span class='c1'># Private networks allow you to access your guest machine only from your own machine </span>
-  <span class='c1'># disallows public accessible, specify ip to your DOKKU_IP</span>
-  <span class='n'>config</span><span class='o'>.</span><span class='n'>vm</span><span class='o'>.</span><span class='n'>network</span> <span class='ss'>:private_network</span><span class='p'>,</span> <span class='ss'>ip</span><span class='p'>:</span> <span class='no'>DOKKU_IP</span>
+  <span class="c1"># From Vagrant doc&#39;s: </span>
+  <span class="c1"># Private networks allow you to access your guest machine only from your own machine </span>
+  <span class="c1"># disallows public accessible, specify ip to your DOKKU_IP</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="ss">:private_network</span><span class="p">,</span> <span class="ss">ip</span><span class="p">:</span> <span class="no">DOKKU_IP</span>
 
-  <span class='c1'># tell vagrant to use virtualbox for our purposes, </span>
-  <span class='c1'># we can have multiple provider blocks for as many providers as we need.</span>
-  <span class='n'>config</span><span class='o'>.</span><span class='n'>vm</span><span class='o'>.</span><span class='n'>provider</span> <span class='ss'>:virtualbox</span> <span class='k'>do</span> <span class='o'>|</span><span class='n'>vb</span><span class='o'>|</span>
-    <span class='c1'># this option makes the NAT engine use the host&#39;s resolver mechanisms to handle DNS requests </span>
-    <span class='c1'># which essentially means that we can specify domain &quot;dokku.me&quot; to be resolved by our local hosts file </span>
-    <span class='n'>vb</span><span class='o'>.</span><span class='n'>customize</span> <span class='o'>[</span><span class='s2'>&quot;modifyvm&quot;</span><span class='p'>,</span> <span class='ss'>:id</span><span class='p'>,</span> <span class='s2'>&quot;--natdnshostresolver1&quot;</span><span class='p'>,</span> <span class='s2'>&quot;on&quot;</span><span class='o'>]</span>
-    <span class='c1'># set the memory of the virtualbox</span>
-    <span class='n'>vb</span><span class='o'>.</span><span class='n'>customize</span> <span class='o'>[</span><span class='s2'>&quot;modifyvm&quot;</span><span class='p'>,</span> <span class='ss'>:id</span><span class='p'>,</span> <span class='s2'>&quot;--memory&quot;</span><span class='p'>,</span> <span class='no'>BOX_MEMORY</span><span class='o'>]</span>
-  <span class='k'>end</span>
+  <span class="c1"># tell vagrant to use virtualbox for our purposes, </span>
+  <span class="c1"># we can have multiple provider blocks for as many providers as we need.</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provider</span> <span class="ss">:virtualbox</span> <span class="k">do</span> <span class="o">|</span><span class="n">vb</span><span class="o">|</span>
+    <span class="c1"># this option makes the NAT engine use the host&#39;s resolver mechanisms to handle DNS requests </span>
+    <span class="c1"># which essentially means that we can specify domain &quot;dokku.me&quot; to be resolved by our local hosts file </span>
+    <span class="n">vb</span><span class="o">.</span><span class="n">customize</span> <span class="o">[</span><span class="s2">&quot;modifyvm&quot;</span><span class="p">,</span> <span class="ss">:id</span><span class="p">,</span> <span class="s2">&quot;--natdnshostresolver1&quot;</span><span class="p">,</span> <span class="s2">&quot;on&quot;</span><span class="o">]</span>
+    <span class="c1"># set the memory of the virtualbox</span>
+    <span class="n">vb</span><span class="o">.</span><span class="n">customize</span> <span class="o">[</span><span class="s2">&quot;modifyvm&quot;</span><span class="p">,</span> <span class="ss">:id</span><span class="p">,</span> <span class="s2">&quot;--memory&quot;</span><span class="p">,</span> <span class="no">BOX_MEMORY</span><span class="o">]</span>
+  <span class="k">end</span>
   
-  <span class='c1'># no vagrant provisioning because we setup Dokku and let it provision our wp-app for us.</span>
-  <span class='c1'># install Dokku on the vagrant vm with bootstrap.sh.</span>
-<span class='k'>end</span>
+  <span class="c1"># no vagrant provisioning because we setup Dokku and let it provision our wp-app for us.</span>
+  <span class="c1"># install Dokku on the vagrant vm with bootstrap.sh.</span>
+<span class="k">end</span>
 </code></pre></div>
-<p>Next we create a bash script to bootstrap our Vagrant machine. Using a script creates a deterministic provisioning process to avoid future headaches. Create a file called bootstrap.sh with the following contents.</p>
+
+<p>Next we create a bash script to bootstrap our Vagrant machine. Using a script creates a deterministic provisioning process to avoid future headaches. 
+Create a file called bootstrap.sh with the following contents. </p>
 
 <p>bootstrap.sh</p>
-<div class='highlight'><pre><code class='bash'><span class='c'>#!/bin/bash</span>
 
-<span class='c'># reference of bootstrap.sh of https://github.com/RyanBalfanz/dokku-vagrant-example</span>
+<div class="highlight"><pre><code class="bash"><span class="c">#!/bin/bash</span>
 
-<span class='c'># add our envs</span>
-<span class='nv'>DB_PLUGIN</span><span class='o'>=</span>postgresql
+<span class="c"># reference of bootstrap.sh of https://github.com/RyanBalfanz/dokku-vagrant-example</span>
 
-<span class='c'># setup the vmachine if it hasn&#39;t been done already</span>
+<span class="c"># add our envs</span>
+<span class="nv">DB_PLUGIN</span><span class="o">=</span>postgresql
+
+<span class="c"># setup the vmachine if it hasn&#39;t been done already</span>
 vagrant up
 
-<span class='c'># run commands to build Dokku on our vagrant box</span>
-<span class='c'># vagrant ssh will automagtocally open up an interactive terminal to our vm.</span>
-<span class='c'># the &#39;--&#39; means the end of a command, so vagrant ssh will not take any more arguments.</span>
-<span class='c'># once we vagrant ssh, we install Dokku (commands from the Dokku github page).</span>
-vagrant ssh -- <span class='s2'>&quot;wget -qO- https://raw.github.com/progrium/dokku/v0.2.3/bootstrap.sh | sudo DOKKU_TAG=v0.2.3 bash&quot;</span>
+<span class="c"># run commands to build Dokku on our vagrant box</span>
+<span class="c"># vagrant ssh will automagtocally open up an interactive terminal to our vm.</span>
+<span class="c"># the &#39;--&#39; means the end of a command, so vagrant ssh will not take any more arguments.</span>
+<span class="c"># once we vagrant ssh, we install Dokku (commands from the Dokku github page).</span>
+vagrant ssh -- <span class="s2">&quot;wget -qO- https://raw.github.com/progrium/dokku/v0.2.3/bootstrap.sh | sudo DOKKU_TAG=v0.2.3 bash&quot;</span>
 
-<span class='c'># run commands to install our Dokku postgresql plugin </span>
-<span class='nv'>PLUGIN_FOUND</span><span class='o'>=</span><span class='sb'>`</span>vagrant ssh -- <span class='s2'>&quot;test -d /var/lib/dokku/plugins/${DB_PLUGIN} &amp;&amp; echo 0 || echo 1&quot;</span><span class='sb'>`</span>
-<span class='k'>if</span> <span class='o'>[</span> <span class='k'>${</span><span class='nv'>PLUGIN_FOUND</span><span class='k'>}</span> -eq 0 <span class='o'>]</span><span class='p'>;</span> <span class='k'>then</span>
-<span class='k'>    </span><span class='nb'>echo</span> <span class='s2'>&quot;${DB_PLUGIN} plugin found! Skipping installation.&quot;</span> 
-<span class='k'>else</span>
-<span class='k'>    </span><span class='nb'>echo</span> <span class='s2'>&quot;${DB_PLUGIN} plugin does not exist! Installing...&quot;</span>
-    <span class='c'># install ${DB_PLUGIN} plugin on our Dokku, commands from the plugin github page.</span>
-    vagrant ssh -- <span class='s2'>&quot;cd /var/lib/dokku/plugins &amp;&amp; sudo git clone https://github.com/Kloadut/dokku-pg-plugin ${DB_PLUGIN} &amp;&amp; sudo dokku plugins-install&quot;</span>
-<span class='k'>fi</span>
+<span class="c"># run commands to install our Dokku postgresql plugin </span>
+<span class="nv">PLUGIN_FOUND</span><span class="o">=</span><span class="sb">`</span>vagrant ssh -- <span class="s2">&quot;test -d /var/lib/dokku/plugins/${DB_PLUGIN} &amp;&amp; echo 0 || echo 1&quot;</span><span class="sb">`</span>
+<span class="k">if</span> <span class="o">[</span> <span class="k">${</span><span class="nv">PLUGIN_FOUND</span><span class="k">}</span> -eq 0 <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+<span class="k">    </span><span class="nb">echo</span> <span class="s2">&quot;${DB_PLUGIN} plugin found! Skipping installation.&quot;</span> 
+<span class="k">else</span>
+<span class="k">    </span><span class="nb">echo</span> <span class="s2">&quot;${DB_PLUGIN} plugin does not exist! Installing...&quot;</span>
+    <span class="c"># install ${DB_PLUGIN} plugin on our Dokku, commands from the plugin github page.</span>
+    vagrant ssh -- <span class="s2">&quot;cd /var/lib/dokku/plugins &amp;&amp; sudo git clone https://github.com/Kloadut/dokku-pg-plugin ${DB_PLUGIN} &amp;&amp; sudo dokku plugins-install&quot;</span>
+<span class="k">fi</span>
 
-<span class='c'># pass our public key to the dokku machine, this allows us to git push deploy</span>
-cat ~/.ssh/id_rsa.pub <span class='p'>|</span> vagrant ssh -- sudo sshcommand acl-add dokku <span class='k'>${</span><span class='nv'>USER</span><span class='k'>}</span>
+<span class="c"># pass our public key to the dokku machine, this allows us to git push deploy</span>
+cat ~/.ssh/id_rsa.pub <span class="p">|</span> vagrant ssh -- sudo sshcommand acl-add dokku <span class="k">${</span><span class="nv">USER</span><span class="k">}</span>
 </code></pre></div>
+
 <p>At this point your file structure should look like this.</p>
-<div class='highlight'><pre><code class='text'>$ ls 
+
+<div class="highlight"><pre><code class="text">$ ls 
    |- .git
    |- .htaccess
    |- .vagrant
@@ -228,28 +256,37 @@ cat ~/.ssh/id_rsa.pub <span class='p'>|</span> vagrant ssh -- sudo sshcommand ac
    |- index.php
    |- ... etc wp files ...
 </code></pre></div>
+
 <p>Next we make bootstrap.sh executable and run it.</p>
-<div class='highlight'><pre><code class='text'>$ chmod +x bootstrap.sh
+
+<div class="highlight"><pre><code class="text">$ chmod +x bootstrap.sh
 $ ./bootstrap.sh
 $ ... etc Vagrant output ... 
 </code></pre></div>
-<p>It will take a while for the bootstrapper to install and configure vagrant.</p>
 
-<p>So I highly recommend you go view a <a href="http://progrium.com/blog/2013/06/19/dokku-the-smallest-paas-implementation-youve-ever-seen/">video on how Dokku works</a> by the creator. By the time you finish checking out the video your vagrant vm should be provisioned and you should be ready to push to your devo.</p>
+<p>It will take a while for the bootstrapper to install and configure vagrant. </p>
 
-<h3 id="preparing_to_deploy_to_devo">Preparing to Deploy to Devo</h3>
+<p>So I highly recommend you go view a [video on how Dokku works] (http://progrium.com/blog/2013/06/19/dokku-the-smallest-paas-implementation-youve-ever-seen/) by the creator.
+By the time you finish checking out the video your vagrant vm should be provisioned and you should be ready to push to your devo.</p>
+
+<h3 id="preparing-to-deploy-to-devo">Preparing to Deploy to Devo</h3>
 
 <p>Since we have set our Vagrant config to resolve domains to our native hosts file, we define a few host entries in /etc/hosts.</p>
 
 <p>/etc/hosts</p>
-<div class='highlight'><pre><code class='text'># for local dokku deploy
+
+<div class="highlight"><pre><code class="text"># for local dokku deploy
 10.0.0.2    dokku.me
 10.0.0.2    wp-app.dokku.me
 </code></pre></div>
+
 <p>Finally, we prepare to deploy our app.</p>
-<div class='highlight'><pre><code class='text'>$ git remote add devo dokku@dokku.me:wp-app
+
+<div class="highlight"><pre><code class="text">$ git remote add devo dokku@dokku.me:wp-app
 $ git push devo master 
-</code></pre></div><div class='highlight'><pre><code class='text'>Counting objects: 5127, done.
+</code></pre></div>
+
+<div class="highlight"><pre><code class="text">Counting objects: 5127, done.
 Delta compression using up to 4 threads.
 Compressing objects: 100% (2643/2643), done.
 Writing objects: 100% (5127/5127), 15.12 MiB | 17.37 MiB/s, done.
@@ -279,11 +316,15 @@ remote: HEAD is now at 2b0ea36... copied over dokku devo vagrantfile.
 To dokku@dokku.me:wp-app
  * [new branch]      master -&gt; master 
 </code></pre></div>
-<h4 id="setting_up_our_database">Setting Up Our Database</h4>
+
+<h4 id="setting-up-our-database">Setting Up Our Database</h4>
 
 <p>Before we proceed to test our instance we want a database, so we run some Dokku postgresql commands to create one.</p>
-<div class='highlight'><pre><code class='text'>$ ssh dokku@dokku.me postgresql:create wp-app
-</code></pre></div><div class='highlight'><pre><code class='text'>-----&gt; Creating /home/dokku/wp-app/ENV
+
+<div class="highlight"><pre><code class="text">$ ssh dokku@dokku.me postgresql:create wp-app
+</code></pre></div>
+
+<div class="highlight"><pre><code class="text">-----&gt; Creating /home/dokku/wp-app/ENV
 -----&gt; Setting config vars and restarting wp-app
 DATABASE_URL: postgres://root:ZwCRrphjiQYJ1Pvx@172.17.42.1:49154/db
 -----&gt; Releasing wp-app ...
@@ -306,11 +347,15 @@ DATABASE_URL: postgres://root:ZwCRrphjiQYJ1Pvx@172.17.42.1:49154/db
 
        Url: &#39;postgres://root:ZwCRrphjiQYJ1Pvx@172.17.42.1:49154/db&#39;
 </code></pre></div>
-<p>Note: Docs for plugin we used for this tutorial can be found here <a href="https://github.com/Kloadut/dokku-pg-plugin">Kloadut/dokku-pg-plugin</a>.</p>
+
+<p>Note: Docs for plugin we used for this tutorial can be found here [Kloadut/dokku-pg-plugin] (https://github.com/Kloadut/dokku-pg-plugin).</p>
 
 <p>Then update Dokku with the environment variable.</p>
-<div class='highlight'><pre><code class='text'>$ ssh dokku@dokku.me postgresql:link wp-app wp-app 
-</code></pre></div><div class='highlight'><pre><code class='text'>-----&gt; Setting config vars and restarting wp-app
+
+<div class="highlight"><pre><code class="text">$ ssh dokku@dokku.me postgresql:link wp-app wp-app 
+</code></pre></div>
+
+<div class="highlight"><pre><code class="text">-----&gt; Setting config vars and restarting wp-app
 DATABASE_URL: postgres://root:ZwCRrphjiQYJ1Pvx@172.17.42.1:49154/db 
 -----&gt; Releasing wp-app ...
 -----&gt; Release complete!
@@ -322,12 +367,14 @@ DATABASE_URL: postgres://root:ZwCRrphjiQYJ1Pvx@172.17.42.1:49154/db
 
 -----&gt; wp-app linked to postgresql/wp-app database
 </code></pre></div>
+
 <p>Then do the same for the application environment variables.</p>
 
-<h4 id="setup_application_environment_variables">Setup Application Environment Variables</h4>
+<h4 id="setup-application-environment-variables">Setup Application Environment Variables</h4>
 
 <p>Store unique keys and salts in Dokku environment variables. Wordpress can provide random values <a href="https://api.wordpress.org/secret-key/1.1/salt/">here</a>.</p>
-<div class='highlight'><pre><code class='text'># You can upload all the variables with one config:set command, but I broke them out for clarity.
+
+<div class="highlight"><pre><code class="text"># You can upload all the variables with one config:set command, but I broke them out for clarity.
 # Due to the way Dokku parses config:set key, value pairs, make sure you wrap the values in escaped quotes (\&#39;&#39;&lt;your value here.
 #&gt;&#39;\&#39;) e.g. AUTH_KEY=&#39;&lt;your key&gt;&#39; should be AUTH_KEY=\&#39;&#39;&lt;your key&gt;&#39;\&#39;. 
 
@@ -340,44 +387,56 @@ ssh dokku@dokku.me config:set wp-app SECURE_AUTH_SALT=\&#39;&#39;&lt;your value 
 ssh dokku@dokku.me config:set wp-app LOGGED_IN_SALT=\&#39;&#39;&lt;your value here&gt;&#39;\&#39;
 ssh dokku@dokku.me config:set wp-app NONCE_SALT=\&#39;&#39;&lt;your value here&gt;&#39;\&#39;
 </code></pre></div>
+
 <p>One thing we need to do before the database will connect is to edit wp-config.php to accept a port parameter for our psql.</p>
 
 <p>wp-config.php</p>
-<div class='highlight'><pre><code class='php'><span class='cp'>&lt;?php</span>
-<span class='c1'>// ** Heroku Postgres settings - from Heroku Environment ** //</span>
-<span class='nv'>$db</span> <span class='o'>=</span> <span class='nb'>parse_url</span><span class='p'>(</span><span class='nv'>$_ENV</span><span class='p'>[</span><span class='s2'>&quot;DATABASE_URL&quot;</span><span class='p'>]);</span>
 
-<span class='c1'>// ** MySQL settings - You can get this info from your web host ** //</span>
-<span class='sd'>/** The name of the database for WordPress */</span>
-<span class='nb'>define</span><span class='p'>(</span><span class='s1'>&#39;DB_NAME&#39;</span><span class='p'>,</span> <span class='nx'>trim</span><span class='p'>(</span><span class='nv'>$db</span><span class='p'>[</span><span class='s2'>&quot;path&quot;</span><span class='p'>],</span><span class='s2'>&quot;/&quot;</span><span class='p'>));</span>
+<div class="highlight"><pre><code class="php"><span class="cp">&lt;?php</span>
+<span class="c1">// ** Heroku Postgres settings - from Heroku Environment ** //</span>
+<span class="nv">$db</span> <span class="o">=</span> <span class="nb">parse_url</span><span class="p">(</span><span class="nv">$_ENV</span><span class="p">[</span><span class="s2">&quot;DATABASE_URL&quot;</span><span class="p">]);</span>
 
-<span class='sd'>/** MySQL database username */</span>
-<span class='nb'>define</span><span class='p'>(</span><span class='s1'>&#39;DB_USER&#39;</span><span class='p'>,</span> <span class='nv'>$db</span><span class='p'>[</span><span class='s2'>&quot;user&quot;</span><span class='p'>]);</span>
+<span class="c1">// ** MySQL settings - You can get this info from your web host ** //</span>
+<span class="sd">/** The name of the database for WordPress */</span>
+<span class="nb">define</span><span class="p">(</span><span class="s1">&#39;DB_NAME&#39;</span><span class="p">,</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$db</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span><span class="s2">&quot;/&quot;</span><span class="p">));</span>
 
-<span class='sd'>/** MySQL database password */</span>
-<span class='nb'>define</span><span class='p'>(</span><span class='s1'>&#39;DB_PASSWORD&#39;</span><span class='p'>,</span> <span class='nv'>$db</span><span class='p'>[</span><span class='s2'>&quot;pass&quot;</span><span class='p'>]);</span>
+<span class="sd">/** MySQL database username */</span>
+<span class="nb">define</span><span class="p">(</span><span class="s1">&#39;DB_USER&#39;</span><span class="p">,</span> <span class="nv">$db</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">]);</span>
 
-<span class='sd'>/** MySQL hostname */</span>
-<span class='nb'>define</span><span class='p'>(</span><span class='s1'>&#39;DB_HOST&#39;</span><span class='p'>,</span> <span class='nv'>$db</span><span class='p'>[</span><span class='s2'>&quot;host&quot;</span><span class='p'>]</span><span class='o'>.</span><span class='s2'>&quot;:&quot;</span><span class='o'>.</span><span class='nv'>$db</span><span class='p'>[</span><span class='s2'>&quot;port&quot;</span><span class='p'>]);</span>  <span class='c1'>// &lt;---- add .&quot;:&quot;.$db[&quot;port&quot;]</span>
+<span class="sd">/** MySQL database password */</span>
+<span class="nb">define</span><span class="p">(</span><span class="s1">&#39;DB_PASSWORD&#39;</span><span class="p">,</span> <span class="nv">$db</span><span class="p">[</span><span class="s2">&quot;pass&quot;</span><span class="p">]);</span>
 
-<span class='o'>...</span> 
+<span class="sd">/** MySQL hostname */</span>
+<span class="nb">define</span><span class="p">(</span><span class="s1">&#39;DB_HOST&#39;</span><span class="p">,</span> <span class="nv">$db</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">]</span><span class="o">.</span><span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="nv">$db</span><span class="p">[</span><span class="s2">&quot;port&quot;</span><span class="p">]);</span>  <span class="c1">// &lt;---- add .&quot;:&quot;.$db[&quot;port&quot;]</span>
+
+<span class="o">...</span> 
 </code></pre></div>
+
 <p>Update the changes in a new branch.</p>
-<div class='highlight'><pre><code class='text'>$ git checkout -b wp-app-devo
+
+<div class="highlight"><pre><code class="text">$ git checkout -b wp-app-devo
 $ git add wp-config.php
 $ git commit -m &quot;added db port to wp-config.php&quot;
-</code></pre></div><div class='highlight'><pre><code class='text'>$ git push devo wp-app-devo:master
+</code></pre></div>
+
+<div class="highlight"><pre><code class="text">$ git push devo wp-app-devo:master
 ---&gt; app updates...
 </code></pre></div>
-<p>Now you should have a working local environment for you wordpress application to run.</p>
 
-<p>Test it out at <a href="http://wp-app.dokku.me">http://wp-app.dokku.me</a>. Yata!</p>
+<p>Now you should have a working local environment for you wordpress application to run. </p>
 
-<h3 id="production_setup_bonus">Production Setup (Bonus)</h3>
+<p>Test it out at [http://wp-app.dokku.me] (http://wp-app.dokku.me). Yata!</p>
 
-<p>This post mainly focuses on how to use Vagrant to setup a manageable Dokku developement stack. It is recommended that you play with the local stack to get a feel for how Dokku works before committing to a production stack. This section will just be a quickstart guide for production environments, so I assume you have working knowledge of git and setting up a VPS with a Dokku installation.</p>
+<h3 id="production-setup-bonus">Production Setup (Bonus)</h3>
 
-<p>The easiest way to get a Dokku host is by following a <a href="https://www.digitalocean.com/community/tutorials/how-to-use-the-dokku-one-click-digitalocean-image-to-run-a-node-js-app">1-click setup on digitalocean</a>. You can also setup Dokku on any server with root access, just follow the instructions listed on the installation readme on <a href="https://github.com/progrium/dokku">Dokku</a>. The steps to setup a working application should be the same.</p>
+<p>This post mainly focuses on how to use Vagrant to setup a manageable Dokku developement stack. It is recommended that you play with the local stack to get a feel for how Dokku works before committing to a production stack. 
+This section will just be a quickstart guide for production environments, so I assume you have working knowledge of git and setting up a VPS with a Dokku installation.</p>
+
+<p>The easiest way to get a Dokku host is by following a [1-click setup on digitalocean] (https://www.digitalocean.com/community/tutorials/how-to-use-the-dokku-one-click-digitalocean-image-to-run-a-node-js-app). 
+You can also setup Dokku on any server with root access, just follow the instructions listed on the installation readme on [Dokku] (https://github.com/progrium/dokku).
+The steps to setup a working application should be the same.</p>
+
+
 					<div class="meta">
 						<p class="date-publish">
 							Published: 
@@ -396,7 +455,7 @@ $ git commit -m &quot;added db port to wp-config.php&quot;
   
      
     	<li><a href="/categories.html#tutorial-ref">
-    		tutorial <span>2</span>
+    		tutorial <span>3</span>
     	</a></li>
     
   
@@ -411,7 +470,7 @@ $ git commit -m &quot;added db port to wp-config.php&quot;
 
   
      
-    	<li><a href="/tags.html#Vagrant-ref">Vagrant <span>2</span></a></li>
+    	<li><a href="/tags.html#Vagrant-ref">Vagrant <span>3</span></a></li>
      
     	<li><a href="/tags.html#Dokku-ref">Dokku <span>1</span></a></li>
     
@@ -512,7 +571,8 @@ $ git commit -m &quot;added db port to wp-config.php&quot;
     for(var i = 0; i < images.length; ++i) {
       myImage = images[i];
       myImage.onload = function() { 
-        if (this.offsetWidth > this.parentNode.offsetWidth) {
+        console.log(this.parentNode.tagName);
+        if ((this.offsetWidth > this.parentNode.offsetWidth) && (this.parentNode.tagName.toLowerCase() !== 'a')) {
           this.style.width = this.parentNode.offsetWidth + "px";
           this.style.height = "100%";
         }
