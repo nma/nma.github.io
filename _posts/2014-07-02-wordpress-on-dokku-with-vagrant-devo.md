@@ -8,10 +8,10 @@ tags: ["Vagrant", "Dokku"]
 {% include JB/setup %}
 
 For a new project I am taking on, I wanted to have my own Platform as a Service (PaaS) that has a git push deploy hook like Heroku.
-There are a few open source projects out there that are currently trying to replicate Heroku, such as [Flynn] (https://github.com/flynn/flynn). 
+There are a few open source projects out there that are currently trying to replicate Heroku, such as [Flynn](https://github.com/flynn/flynn). 
 
 Flynn is trying to become an open source Heroku replacement, but it has too many features that are overkill for our simple applications. 
-I only want the git push deploy for now, this is where [Dokku] (https://github.com/progrium/dokku) comes in. 
+I only want the git push deploy for now, this is where [Dokku](https://github.com/progrium/dokku) comes in. 
 
 Dokku is a very hackable and has very small code base, making it much easier to understand. I plan to use Vagrant to setup a local Dokku instance. 
 
@@ -28,8 +28,8 @@ This is a pretty detailed book written by the author of Vagrant, it contains all
 
 Before we begin our tutorial, please make sure you have the following installed:
 
-* [Vagrant] (http://www.vagrantup.com/) 
-* [Virtualbox] (https://www.virtualbox.org/) (or any other provider supported by Vagrant)
+* [Vagrant](http://www.vagrantup.com/) 
+* [Virtualbox](https://www.virtualbox.org/) (or any other provider supported by Vagrant)
 
 You can go on their official webpages for most troubleshooting information.
 
@@ -51,7 +51,7 @@ Following up, we setup our devo environment.
 $ vagrant init
 {% endhighlight %}
 
-You should now see a file called [Vagrantfile] (https://docs.vagrantup.com/v2/vagrantfile/index.html) in your project directory. Which is a configuration file for launching and provisioning VMs. 
+You should now see a file called [Vagrantfile](https://docs.vagrantup.com/v2/vagrantfile/index.html) in your project directory. Which is a configuration file for launching and provisioning VMs. 
 Next we will use the following configuration to setup our devo environment. 
 
 The following configuration file is modified from the Dokku project repo, which will allow us to configure our virtual machine. 
@@ -162,7 +162,7 @@ $ ... etc Vagrant output ...
 
 It will take a while for the bootstrapper to install and configure vagrant. 
 
-So I highly recommend you go view a [video on how Dokku works] (http://progrium.com/blog/2013/06/19/dokku-the-smallest-paas-implementation-youve-ever-seen/) by the creator.
+So I highly recommend you go view a [video on how Dokku works](http://progrium.com/blog/2013/06/19/dokku-the-smallest-paas-implementation-youve-ever-seen/) by the creator.
 By the time you finish checking out the video your vagrant vm should be provisioned and you should be ready to push to your devo.
 
 ### Preparing to Deploy to Devo
@@ -332,7 +332,7 @@ $ git push devo wp-app-devo:master
 
 Now you should have a working local environment for you wordpress application to run. 
 
-Test it out at [http://wp-app.dokku.me] (http://wp-app.dokku.me). Yata!
+Test it out at [http://wp-app.dokku.me](http://wp-app.dokku.me). Yata!
 
 ### Production Setup (Bonus)
 

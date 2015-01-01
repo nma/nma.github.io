@@ -203,7 +203,7 @@ Kernel hacking  --->
 
 ![Preempt RT Flag](https://s3-us-west-2.amazonaws.com/nickma.com/Screen+Shot+2014-07-19+at+1.05.54+PM.png)
 
-A note from [www.osadl.com] (https://www.osadl.org/Realtime-Preempt-Kernel.kernel-rt.0.html#ubuntu):
+A note from [www.osadl.com](https://www.osadl.org/Realtime-Preempt-Kernel.kernel-rt.0.html#ubuntu):
 Should you happen to be the proud owner of a multi-core processor, be sure to specify the -j `<jobs`> option of make where `<jobs`> is twice the number of cores your processor has, as this will speed up kernel compilation considerably.
 
 {% highlight bash %}
@@ -219,7 +219,7 @@ At this point you should be able to test out the kernel, perhaps in a later post
 
 ### Alternative ###
 Near the end of my research I found out that ubuntu has its own linux-realtime that can be apt-get installed, though only for certain versions, you may end up on an older version of the kernel.
-This is a far simpler solution on [ubuntu/RealTime] (https://wiki.ubuntu.com/RealTime).
+This is a far simpler solution on [ubuntu/RealTime](https://wiki.ubuntu.com/RealTime).
 
 If you want to try this method, its easy! Since we are on a virtual machine, just kill it off with vagrant destroy and rebuild it with the correct base box.
 Just replace the provisioning script with the procedures on link above. 

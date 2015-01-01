@@ -3,4 +3,5 @@
 *.swp~
 .bundle
 /_theme_packages
+/_site
 
