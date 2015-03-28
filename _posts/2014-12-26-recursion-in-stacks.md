@@ -2,8 +2,8 @@
 layout: post
 title: "Thinking about Recursion in Stacks"
 description: "Small epiphany on other ways to reason about recursion"
-category: ""
-tags: ["interviews"]
+category: "Interviews"
+tags: ["Interviews"]
 ---
 {% include JB/setup %}
 

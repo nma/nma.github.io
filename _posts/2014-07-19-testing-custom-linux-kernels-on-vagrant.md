@@ -3,7 +3,7 @@ layout: post
 title: "Testing Custom Linux Kernels on Vagrant."
 description: "Why not?"
 category: "Tutorial"
-tags: ["Vagrant", "Ubuntu Kernel"]
+tags: ["Vagrant", "Linux Kernel"]
 ---
 {% include JB/setup %}
 

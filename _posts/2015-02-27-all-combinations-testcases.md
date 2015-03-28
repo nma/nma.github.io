@@ -1,18 +1,24 @@
 ---
 layout: post
-title: "All combinations testcase generation"
+title: "All Combinations Testcase Generation"
 description: ""
-category: ""
-tags: []
+category: "Algorithms"
+tags: ["Algorithms", "Testing"]
 ---
 {% include JB/setup %}
 
-Lets start from basic principles, what is combinations and what is permutations?
-From there we can derive what we need in the algorithm to generate our all possibly parameter combinations for our test cases given any set of parameters.
-Somtimes it may be overkill to exhaustively test all combinations of parameters, there are ways to reduce the combinations and still get the same amount of coverage. 
+Sometimes, you find yourself dealing with configuration heavy software, how do you create test cases for this 
+efficiently? You don't want to manually create all test cases, instead we can have them generated with an algorithm,
+called all combinations testcase. 
+It uses generates parameter combinations for our test cases given any set of parameters.
 
-In a following post, we will take a look at how we can tuncate a set of all combinations to give us all pairs algorithm, which reduces the test space, 
-applying the theory of orthogonal arrays to reduce the test combinations. 
+Somtimes it may be overkill to exhaustively test all combinations of parameters, there are ways to reduce the 
+combinations and still get the same amount of coverage. In a following post, we will take a look at how we can tuncate 
+a set of all combinations to give us all pairs algorithm, which reduces the test space, applying the theory of 
+orthogonal arrays to reduce the test combinations. 
+
+For now, lets get the first MVP and just create all test cases based on our input parameters. 
+start from basic principles, what is combinations and what is permutations?
 
 Based on sources from http://www.mathsisfun.com/combinatorics/combinations-permutations.html.
 Permutations:
@@ -24,7 +30,8 @@ Combination:
     e.g. a ingredient list, the ordering does not matter!
     bannana, bread, salad is the same as  salad, bread, bannana
 
-So if you want to smartly generate blackbox testing based on the input parameters (aka, ingredients) you want all combinations testcase generation.
+So if you want to smartly generate blackbox testing based on the input parameters (aka, ingredients) you want all 
+combinations testcase generation.
 Say you have a method that takes in 2 parameters a and b. 
 <pre>
 | a | b | 
