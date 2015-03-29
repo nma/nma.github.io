@@ -15,12 +15,14 @@ How do we design this configuration generation system such that it will scale ea
 making backwards compatibility easy? This requires a 2 part process.
 
 
+
 [1] Define configurations as a Model View Controller (MVC). If configuration data is kept seperate from the view or the
 resultant configuration file, we can prevent making breaking changes to the configuration data. New requirements should
 not need constant changes to the datastore.
 
 The configuration service will then controll the configuration data, and generates the specific versions of the 
 configuration file.
+
 
 
 [2] We use some neat coding trick for the configuration file generation that only applys diffs to the last version.
