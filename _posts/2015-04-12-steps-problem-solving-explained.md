@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Steps Problem Solving Explained"
+title: "Steps of Problem Solving Explained"
 description: "Quick explanation of problem solving from psychology lingo."
 category: "Wetware"
 tags: ["Wetware", "Interviews", "Psychology"]
