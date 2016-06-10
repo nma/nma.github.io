@@ -18,9 +18,9 @@ The first attempt to deduplicate the table directly in Redshift, but the query j
 the simplest approach of using the existing infrastructure.
 
 After that failed, the next though was method was to directly try it on Hadoop. 
-These days the since first getting out of school any data set essentially equates to a Hadoop job, but most of the time
-you don't need it. There is so much upfront configuration and tweaking to get the Hadoop job going that if you are not
-going to perform the same job continiously, the expected value is just negative.
+These days the since first getting out of school, any data equates to a Hadoop job. Though after working a while,
+most of the time you don't need it. There is so much upfront configuration and tweaking to get the Hadoop job going 
+that if you are not going to perform the same job continiously, the expected value is just negative.
 
 I wasted a few days fighting with Hive SQL, AWS data pipeline, and EMR just to realize that without spending 3 weeks of 
 work I won't get the Hadoop cluster fast enough to make it work.
