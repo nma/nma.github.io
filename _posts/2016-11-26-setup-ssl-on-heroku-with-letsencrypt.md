@@ -234,5 +234,16 @@ $> curl -vI https://www.example.com
 # boom.
 ```
 
+When you need to upgrade the cert.
+
+```
+sudo letsencrypt certonly --manual -d www.example.com 
+```
+
 Free certs for all your domains, no $35/mo issues. 
-To whom it may concern (open source owner) you owe me $35/mo worth of coffee :P.
+
+
+When you need to update the cert to match new subdomains
+```
+sudo letsencrypt certonly --expand -d www.example.com 
+```
