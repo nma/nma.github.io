@@ -3,7 +3,7 @@ layout: post
 title: "Setup SSL on Heroku with letsencrypt and Rails"
 description: "how to setup SSL works with letsencrypt"
 category: ""
-tags: ["Open Source"]
+tags: ["Open Source", "DevOps"]
 ---
 {% include JB/setup %}
 
