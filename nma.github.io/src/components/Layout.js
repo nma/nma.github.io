@@ -1,7 +1,8 @@
 import React from 'react'
 import { Link } from 'gatsby'
-import { Head1, Head3, themes } from 'toxin-ui'
+import { Head1, Head3, Card, themes } from 'toxin-ui'
 import { ThemeProvider } from 'styled-components'
+import Header from './Header'
 
 class Layout extends React.Component {
   render() {
@@ -42,13 +43,14 @@ class Layout extends React.Component {
     }
     return (
       <ThemeProvider theme={themes.toxin}>
-        <div>
+        <Card bg="#f4f4f6">
+          <Header mb={1} />
           {header}
           {children}
           <footer>
             © 2018, Built with <a href="https://www.gatsbyjs.org">Gatsby</a>
           </footer>
-        </div>
+        </Card>
       </ThemeProvider>
     )
   }

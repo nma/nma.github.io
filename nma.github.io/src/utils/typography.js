@@ -6,6 +6,16 @@ Wordpress2016.overrideThemeStyles = () => {
     'a.gatsby-resp-image-link': {
       boxShadow: `none`,
     },
+    // googleFonts: [
+    //   {
+    //     name: "Montserrat",
+    //     styles: ["400"],
+    //   },
+    //   {
+    //     name: "Quicksand",
+    //     styles: ["400"],
+    //   },
+    // ],
   }
 }
 
