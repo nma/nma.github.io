@@ -1,10 +1,11 @@
+// @flow
 import React from 'react'
 import { Link, graphql } from 'gatsby'
 
 import Bio from '../components/Bio'
 import Layout from '../components/Layout'
 import SEO from '../components/seo'
-import { Head3 } from 'toxin-ui'
+import { Head3, Flex, Box } from 'toxin-ui'
 
 class BlogIndex extends React.Component {
   render() {
@@ -19,20 +20,27 @@ class BlogIndex extends React.Component {
           keywords={[`blog`, `gatsby`, `javascript`, `react`]}
         />
         <Bio />
-        {posts.map(({ node }) => {
-          const title = node.frontmatter.title || node.fields.slug
-          return (
-            <div key={node.fields.slug}>
-              <Head3>
-                <Link style={{ boxShadow: `none` }} to={node.fields.slug}>
-                  {title}
-                </Link>
-              </Head3>
-              <small>{node.frontmatter.date}</small>
-              <p dangerouslySetInnerHTML={{ __html: node.excerpt }} />
-            </div>
-          )
-        })}
+        <Flex
+          alignItems="center"
+          width={[2 / 5]}
+          mx="auto"
+          flexDirection="column"
+        >
+          {posts.map(({ node }) => {
+            const title = node.frontmatter.title || node.fields.slug
+            return (
+              <Box key={node.fields.slug}>
+                <Head3>
+                  <Link style={{ boxShadow: `none` }} to={node.fields.slug}>
+                    {title}
+                  </Link>
+                </Head3>
+                <small>{node.frontmatter.date}</small>
+                <p dangerouslySetInnerHTML={{ __html: node.excerpt }} />
+              </Box>
+            )
+          })}
+        </Flex>
       </Layout>
     )
   }
