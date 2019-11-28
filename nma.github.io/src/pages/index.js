@@ -19,10 +19,17 @@ class BlogIndex extends React.Component {
           title="All posts"
           keywords={[`blog`, `gatsby`, `javascript`, `react`]}
         />
-        <Bio />
         <Flex
           alignItems="center"
-          width={[2 / 5]}
+          width={[1 / 2, 3 / 5]}
+          mx="auto"
+          flexDirection="column"
+        >
+          <Bio />
+        </Flex>
+        <Flex
+          alignItems="center"
+          width={[1 / 2, 3 / 5]}
           mx="auto"
           flexDirection="column"
         >

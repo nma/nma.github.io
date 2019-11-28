@@ -75,6 +75,6 @@ module.exports = {
       },
     },
     `gatsby-plugin-styled-components`,
-    `gatsby-plugin-flow`,
+    //`gatsby-plugin-flow`,
   ],
 }
