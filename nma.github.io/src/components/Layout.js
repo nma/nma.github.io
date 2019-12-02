@@ -46,16 +46,12 @@ class Layout extends React.Component {
         <Box bg="#f4f4f6">
           <Card>
             <Header mb={1} />
-            <Flex justifyContent="center" p={[1, 2, 4]}>
+            <Flex justifyContent="center" p={[1, 2, 4]} minHeight={[1]}>
               {header}
             </Flex>
           </Card>
-          <Card>{children}</Card>
-          <Card
-            bg="white"
-            height={140}
-            boxShadow="0px 0px 10px 0px rgba(8,8,8,0.25)"
-          >
+          <Card bg="white" boxShadow="0px 0px 10px 0px rgba(8,8,8,0.25)">
+            {children}
             <Flex justifyContent="center" p={[1, 2, 4]}>
               <footer>
                 © 2018, Built with <a href="https://www.gatsbyjs.org">Gatsby</a>

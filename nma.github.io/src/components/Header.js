@@ -1,5 +1,6 @@
 import React from 'react'
-import { Head5, Flex, Nav, Button } from 'toxin-ui'
+import { Head5, Flex, Nav, Button, themes } from 'toxin-ui'
+import { ThemeProvider } from 'styled-components'
 
 const RightSection = props => (
   <Flex
@@ -9,7 +10,10 @@ const RightSection = props => (
     position="relative"
     {...props}
   >
-    <Head5>My Work</Head5>
+    <ThemeProvider theme={themes.toxin}>
+      <Head5>My Work</Head5>
+    </ThemeProvider>
+
     <Head5>About Me</Head5>
     <Head5>Blog</Head5>
   </Flex>

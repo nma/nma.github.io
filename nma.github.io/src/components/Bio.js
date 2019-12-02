@@ -1,6 +1,7 @@
 import React from 'react'
 import { StaticQuery, graphql } from 'gatsby'
 import Image from 'gatsby-image'
+import { Flex } from 'toxin-ui'
 
 import { rhythm } from '../utils/typography'
 
@@ -11,12 +12,7 @@ function Bio() {
       render={data => {
         const { author, social } = data.site.siteMetadata
         return (
-          <div
-            style={{
-              display: `flex`,
-              marginBottom: rhythm(2.5),
-            }}
-          >
+          <Flex p={4}>
             <Image
               fixed={data.avatar.childImageSharp.fixed}
               alt={author}
@@ -28,14 +24,14 @@ function Bio() {
               }}
             />
             <p>
-              Written by <strong>{author}</strong> who lives and works in San
-              Francisco building useful things.
+              Written by <strong>{author}</strong> who lives and works in
+              Toronto tinkering.
               {` `}
               <a href={`https://twitter.com/${social.twitter}`}>
                 You should follow him on Twitter
               </a>
             </p>
-          </div>
+          </Flex>
         )
       }}
     />
