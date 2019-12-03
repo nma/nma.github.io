@@ -1,19 +1,16 @@
 import React from 'react'
-import { Head5, Flex, Nav, Button, themes } from 'toxin-ui'
-import { ThemeProvider } from 'styled-components'
+import { Head5, Button, Nav } from 'toxin-ui'
+import { Box, Flex } from 'rebass'
 
 const RightSection = props => (
   <Flex
     alignItems="flex-start"
     justifyContent="space-evenly"
-    width={[1, 1 / 3]}
+    width={[6, 2]}
     position="relative"
     {...props}
   >
-    <ThemeProvider theme={themes.toxin}>
-      <Head5>My Work</Head5>
-    </ThemeProvider>
-
+    <Head5>My Work</Head5>
     <Head5>About Me</Head5>
     <Head5>Blog</Head5>
   </Flex>
@@ -24,7 +21,7 @@ const LeftSection = props => (
     alignItems="center"
     justifyContent="space-evenly"
     position="relative"
-    width={[1, 1 / 3]}
+    width={[5, 2]}
     {...props}
   >
     <Head5>Twitter</Head5>
@@ -33,20 +30,13 @@ const LeftSection = props => (
   </Flex>
 )
 
-const Header = props => {
-  return (
-    <Nav {...props} bg="white" boxShadow="0px 0px 10px 0px rgba(8,8,8,0.25)">
-      <Flex
-        height={70}
-        alignItems="center"
-        justifyContent="center"
-        position="relative"
-      >
-        <RightSection />
-        <LeftSection />
-      </Flex>
-    </Nav>
-  )
-}
+const Header = props => (
+  <Nav {...props} bg="white" boxShadow="0px 0px 10px 0px rgba(8,8,8,0.25)">
+    <Flex alignItems="center" justifyContent="center" position="relative">
+      <RightSection />
+      <LeftSection />
+    </Flex>
+  </Nav>
+)
 
 export default Header
