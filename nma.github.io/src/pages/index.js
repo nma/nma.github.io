@@ -5,7 +5,8 @@ import { Link, graphql } from 'gatsby'
 import Bio from '../components/Bio'
 import Layout from '../components/Layout'
 import SEO from '../components/seo'
-import { Head3, Flex, Box } from 'toxin-ui'
+import Header from '../components/Header'
+import { Box, Flex, Heading } from 'rebass'
 
 class BlogIndex extends React.Component {
   render() {
@@ -19,6 +20,7 @@ class BlogIndex extends React.Component {
           title="All posts"
           keywords={[`blog`, `gatsby`, `javascript`, `react`]}
         />
+        <Header />
         <Flex
           alignItems="center"
           width={[1 / 2, 3 / 5]}
@@ -37,11 +39,11 @@ class BlogIndex extends React.Component {
             const title = node.frontmatter.title || node.fields.slug
             return (
               <Box key={node.fields.slug}>
-                <Head3>
+                <Heading>
                   <Link style={{ boxShadow: `none` }} to={node.fields.slug}>
                     {title}
                   </Link>
-                </Head3>
+                </Heading>
                 <small>{node.frontmatter.date}</small>
                 <p dangerouslySetInnerHTML={{ __html: node.excerpt }} />
               </Box>

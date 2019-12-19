@@ -1,7 +1,7 @@
 import React from 'react'
 import { StaticQuery, graphql } from 'gatsby'
 import Image from 'gatsby-image'
-import { Flex } from 'toxin-ui'
+import { Flex } from 'rebass'
 
 import { rhythm } from '../utils/typography'
 

@@ -1,42 +1,37 @@
-import React from 'react'
-import { Head5, Button, Nav } from 'toxin-ui'
+import React, { useContext } from 'react'
 import { Box, Flex } from 'rebass'
+import Headroom from 'react-headroom'
+import { ThemeContext } from 'styled-components'
+import styled from 'styled-components'
+import RouteLink from './RouteLink'
 
-const RightSection = props => (
-  <Flex
-    alignItems="flex-start"
-    justifyContent="space-evenly"
-    width={[6, 2]}
-    position="relative"
-    {...props}
-  >
-    <Head5>My Work</Head5>
-    <Head5>About Me</Head5>
-    <Head5>Blog</Head5>
-  </Flex>
-)
+const capitalize = s => s && s[0].toUpperCase() + s.slice(1)
 
-const LeftSection = props => (
-  <Flex
-    alignItems="center"
-    justifyContent="space-evenly"
-    position="relative"
-    width={[5, 2]}
-    {...props}
-  >
-    <Head5>Twitter</Head5>
-    <Head5>Linkedin</Head5>
-    <Button>Follow Me</Button>
-  </Flex>
-)
+const HeaderContainer = styled(Headroom)`
+  background: ${props => props.theme.colors['white']};
+  position: absolute;
+  width: 100%;
+`
 
-const Header = props => (
-  <Nav {...props} bg="white" boxShadow="0px 0px 10px 0px rgba(8,8,8,0.25)">
-    <Flex alignItems="center" justifyContent="center" position="relative">
-      <RightSection />
-      <LeftSection />
-    </Flex>
-  </Nav>
-)
+const Header = () => {
+  const themeContext = useContext(ThemeContext)
+
+  return (
+    <HeaderContainer>
+      <Flex
+        flexWrap="wrap"
+        justifyContent="space-between"
+        alignItems="center"
+        p={3}
+      >
+        <Flex>
+          <RouteLink name="Blog" />
+          <RouteLink name="About" />
+          <RouteLink name="Projects" />
+        </Flex>
+      </Flex>
+    </HeaderContainer>
+  )
+}
 
 export default Header
