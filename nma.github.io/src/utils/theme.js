@@ -1,6 +1,6 @@
 export default {
   breakpoints: [32, 48, 64],
-  space: [0, 10, 20, 30, 40, 50, 60, 70, 80],
+  space: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
   fontSizes: [12, 14, 16, 20, 24, 32, 42],
   fontWeights: [1, 10, 100, 200, 300, 400, 500, 600, 700, 800, 900],
   lineHeights: {
@@ -42,9 +42,9 @@ export default {
     'greyscale-medium': '#C7C7CF',
     'greyscale-light': '#F4F4F5',
 
-    'brand-primary': '#BC9CFF',
-    'brand-primary-offset': '#8BA4F9',
-    'brand-secondary': '#6FCF97',
-    'brand-secondary-offset': '#66D2EA',
+    'brand-secondary': '#BC9CFF',
+    'brand-secondary-offset': '#8BA4F9',
+    'brand-primary': '#6FCF97',
+    'brand-primary-offset': '#66D2EA',
   },
 }

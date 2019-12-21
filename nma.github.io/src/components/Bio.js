@@ -5,14 +5,14 @@ import { Flex } from 'rebass'
 
 import { rhythm } from '../utils/typography'
 
-function Bio() {
+function Bio(props) {
   return (
     <StaticQuery
       query={bioQuery}
       render={data => {
         const { author, social } = data.site.siteMetadata
         return (
-          <Flex p={4}>
+          <Flex p={4} {...props}>
             <Image
               fixed={data.avatar.childImageSharp.fixed}
               alt={author}

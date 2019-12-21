@@ -4,8 +4,7 @@ import Headroom from 'react-headroom'
 import { ThemeContext } from 'styled-components'
 import styled from 'styled-components'
 import RouteLink from './RouteLink'
-
-const capitalize = s => s && s[0].toUpperCase() + s.slice(1)
+import Nav from './Nav'
 
 const HeaderContainer = styled(Headroom)`
   background: ${props => props.theme.colors['white']};
@@ -18,18 +17,20 @@ const Header = () => {
 
   return (
     <HeaderContainer>
-      <Flex
-        flexWrap="wrap"
-        justifyContent="space-between"
-        alignItems="center"
-        p={3}
-      >
-        <Flex>
-          <RouteLink name="Blog" />
-          <RouteLink name="About" />
-          <RouteLink name="Projects" />
+      <Nav bg="white" boxShadow="0px 0px 10px 0px rgba(8,8,8,0.25)">
+        <Flex
+          flexWrap="wrap"
+          justifyContent="space-between"
+          alignItems="center"
+          p={3}
+        >
+          <Flex>
+            <RouteLink name="Blog" />
+            <RouteLink name="About" />
+            <RouteLink name="Projects" />
+          </Flex>
         </Flex>
-      </Flex>
+      </Nav>
     </HeaderContainer>
   )
 }

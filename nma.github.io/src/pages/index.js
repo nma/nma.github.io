@@ -27,7 +27,7 @@ class BlogIndex extends React.Component {
           mx="auto"
           flexDirection="column"
         >
-          <Bio />
+          <Bio mt={10} />
         </Flex>
         <Flex
           alignItems="center"

@@ -1,8 +1,8 @@
 import React from 'react'
-import { Box } from 'rebass'
 import PropTypes from 'prop-types'
 // import LinkAnimated from './LinkAnimated'
 import styled from 'styled-components'
+import { Head2 } from './Text'
 
 const LinkAnimated = styled.span`
   text-decoration: none;
@@ -35,11 +35,11 @@ const LinkAnimated = styled.span`
 `
 
 const RouteLink = ({ onClick, selected, name }) => (
-  <Box ml={[2, 3]} color="black" fontSize={[2, 3]}>
+  <Head2 ml={[2, 3]} color="black">
     <LinkAnimated onClick={onClick} selected={selected}>
       {name}
     </LinkAnimated>
-  </Box>
+  </Head2>
 )
 
 RouteLink.propTypes = {
