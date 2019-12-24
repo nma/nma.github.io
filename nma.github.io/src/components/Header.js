@@ -24,7 +24,7 @@ const Header = () => {
           alignItems="center"
           p={3}
         >
-          <Flex>
+          <Flex alignItems="flex-start">
             <RouteLink name="Blog" />
             <RouteLink name="About" />
             <RouteLink name="Projects" />
