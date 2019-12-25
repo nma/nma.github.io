@@ -1,5 +1,5 @@
 export default {
-  breakpoints: [32, 48, 64],
+  breakpoints: ['32em', '48em', '64em'],
   space: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
   fontSizes: [12, 14, 16, 20, 24, 32, 42],
   fontWeights: [1, 10, 100, 200, 300, 400, 500, 600, 700, 800, 900],

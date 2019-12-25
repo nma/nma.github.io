@@ -6,7 +6,8 @@ import Bio from '../components/Bio'
 import Layout from '../components/Layout'
 import SEO from '../components/seo'
 import Header from '../components/Header'
-import Landing from '../components/Landing'
+import CenterImage from '../components/CenterImage'
+import About from '../components/About'
 import { Box, Flex, Heading } from 'rebass'
 
 class BlogIndex extends React.Component {
@@ -22,10 +23,11 @@ class BlogIndex extends React.Component {
           keywords={[`blog`, `gatsby`, `javascript`, `react`]}
         />
         <Header />
-        <Landing />
+        <CenterImage />
+        <About />
         <Flex
           alignItems="center"
-          width={[1 / 2, 3 / 5]}
+          width={['36em', '48em', '64em']}
           mx="auto"
           flexDirection="column"
         >
@@ -33,7 +35,7 @@ class BlogIndex extends React.Component {
         </Flex>
         <Flex
           alignItems="center"
-          width={[1 / 2, 3 / 5]}
+          width={['36em', '48em', '64em']}
           mx="auto"
           flexDirection="column"
         >

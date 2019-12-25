@@ -21,14 +21,16 @@ const Image = () => (
           relativePath: { eq: "photo-1523821741446-edb2b68bb7a0.webp" }
         ) {
           childImageSharp {
-            fluid(maxWidth: 1200) {
+            fluid(maxWidth: 2400) {
               ...GatsbyImageSharpFluid
             }
           }
         }
       }
     `}
-    render={data => <Img fluid={data.placeholderImage.childImageSharp.fluid} />}
+    render={data => (
+      <Img loading="lazy" fluid={data.placeholderImage.childImageSharp.fluid} />
+    )}
   />
 )
 export default Image
