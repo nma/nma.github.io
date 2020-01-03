@@ -1,7 +1,8 @@
 import React from 'react'
 import { StaticQuery, graphql } from 'gatsby'
 import Image from 'gatsby-image'
-import { Flex } from 'rebass'
+import { Flex, Box } from 'rebass'
+import { Text } from './Text'
 
 import { rhythm } from '../utils/typography'
 
@@ -12,7 +13,7 @@ function Bio(props) {
       render={data => {
         const { author, social } = data.site.siteMetadata
         return (
-          <Flex p={4} {...props}>
+          <Flex p={4} alignItems="center" {...props}>
             <Image
               fixed={data.avatar.childImageSharp.fixed}
               alt={author}
@@ -23,14 +24,18 @@ function Bio(props) {
                 borderRadius: `100%`,
               }}
             />
-            <p>
-              Written by <strong>{author}</strong> who lives and works in
-              Toronto tinkering.
-              {` `}
-              <a href={`https://twitter.com/${social.twitter}`}>
-                You should follow him on Twitter
-              </a>
-            </p>
+            <Flex flexDirection="column" alignItems="center">
+              <Box>
+                <Text>
+                  Blog of <strong>{author}</strong> who lives and works in
+                  Toronto tinkering.
+                  {` `}
+                  <a href={`https://twitter.com/${social.twitter}`}>
+                    You should follow him on Twitter
+                  </a>
+                </Text>
+              </Box>
+            </Flex>
           </Flex>
         )
       }}

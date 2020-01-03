@@ -2,11 +2,12 @@ module.exports = {
   siteMetadata: {
     title: `Blog`,
     author: `Nick Ma`,
-    description: `A starter blog demonstrating what Gatsby can do.`,
-    siteUrl: `https://gatsby-starter-blog-demo.netlify.com/`,
+    description: `Nick Ma's blog.`,
+    siteUrl: `https://nickma.com/`,
     social: {
-      twitter: `kylemathews`,
+      twitter: `nma38`,
     },
+    isMediumUserDefined: true,
   },
   plugins: [
     {
@@ -76,5 +77,11 @@ module.exports = {
       },
     },
     //`gatsby-plugin-flow`,
+    {
+      resolve: 'gatsby-source-medium-fix',
+      options: {
+        username: '@NickMa38',
+      },
+    },
   ],
 }

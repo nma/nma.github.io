@@ -7,7 +7,8 @@ import Layout from '../components/Layout'
 import SEO from '../components/seo'
 import Header from '../components/Header'
 import CenterImage from '../components/CenterImage'
-import About from '../components/About'
+import Writing from '../components/Writing'
+// import About from '../components/About'
 import { Box, Flex, Heading } from 'rebass'
 
 class BlogIndex extends React.Component {
@@ -24,16 +25,12 @@ class BlogIndex extends React.Component {
         />
         <Header />
         <CenterImage />
-        <About />
-        <Flex
-          alignItems="center"
-          width={['36em', '48em', '64em']}
-          mx="auto"
-          flexDirection="column"
-        >
-          <Bio mt={10} />
+        {/* <About /> */}
+        <Flex alignItems="center" width={'100%'} flexDirection="column">
+          <Bio mt={[10, 5]} />
         </Flex>
-        <Flex
+        <Writing />
+        {/* <Flex
           alignItems="center"
           width={['36em', '48em', '64em']}
           mx="auto"
@@ -53,7 +50,7 @@ class BlogIndex extends React.Component {
               </Box>
             )
           })}
-        </Flex>
+        </Flex> */}
       </Layout>
     )
   }

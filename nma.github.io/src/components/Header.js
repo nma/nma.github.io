@@ -32,9 +32,9 @@ const Header = () => {
             <RouteLink name="Home" />
           </Flex>
           <Flex>
-            <RouteLink name="Blog" />
             <RouteLink name="About" />
-            <RouteLink name="Projects" />
+            <RouteLink name="Blog" />
+            {/* <RouteLink name="Projects" /> */}
           </Flex>
         </Flex>
       </ShadowFlex>
