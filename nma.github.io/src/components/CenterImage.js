@@ -7,6 +7,7 @@ const CenterImage = () => (
     bg="greyscale-light"
     overflow="hidden"
     maxHeight={[0, '20vh', '50vh']}
+    mb={[0, 2, 4]}
     boxShadow="inset 0px -10px 10px -10px rgba(8,8,8,0.25)"
   >
     <Image />

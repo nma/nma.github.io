@@ -34,8 +34,8 @@ const LinkAnimated = styled.span`
   }
 `
 
-const RouteLink = ({ onClick, selected, name }) => (
-  <Head2 fontSize={[1, 3, 4]} ml={[2, 3]} color="black">
+const RouteLink = ({ onClick, selected, name, ...rest }) => (
+  <Head2 fontSize={[1, 3, 4]} color="black" {...rest}>
     <LinkAnimated onClick={onClick} selected={selected}>
       {name}
     </LinkAnimated>

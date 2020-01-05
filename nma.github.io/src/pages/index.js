@@ -1,6 +1,6 @@
 // @flow
 import React from 'react'
-import { Link, graphql } from 'gatsby'
+import { graphql } from 'gatsby'
 
 import Bio from '../components/Bio'
 import Layout from '../components/Layout'
@@ -26,31 +26,14 @@ class BlogIndex extends React.Component {
         <Header />
         <CenterImage />
         {/* <About /> */}
-        <Flex alignItems="center" width={'100%'} flexDirection="column">
-          <Bio mt={[10, 5]} />
-        </Flex>
-        <Writing />
-        {/* <Flex
+        {/* <Flex 
           alignItems="center"
-          width={['36em', '48em', '64em']}
-          mx="auto"
+          width={'100%'}
           flexDirection="column"
-        >
-          {posts.map(({ node }) => {
-            const title = node.frontmatter.title || node.fields.slug
-            return (
-              <Box key={node.fields.slug}>
-                <Heading>
-                  <Link style={{ boxShadow: `none` }} to={node.fields.slug}>
-                    {title}
-                  </Link>
-                </Heading>
-                <small>{node.frontmatter.date}</small>
-                <p dangerouslySetInnerHTML={{ __html: node.excerpt }} />
-              </Box>
-            )
-          })}
+          mb={5}>
+          <Bio />
         </Flex> */}
+        <Writing posts={posts} />
       </Layout>
     )
   }

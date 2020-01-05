@@ -13,7 +13,12 @@ function Bio(props) {
       render={data => {
         const { author, social } = data.site.siteMetadata
         return (
-          <Flex p={4} alignItems="center" {...props}>
+          <Flex
+            width={['36em', '48em', '64em']}
+            py={4}
+            alignItems="center"
+            {...props}
+          >
             <Image
               fixed={data.avatar.childImageSharp.fixed}
               alt={author}
@@ -24,7 +29,7 @@ function Bio(props) {
                 borderRadius: `100%`,
               }}
             />
-            <Flex flexDirection="column" alignItems="center">
+            <Flex flexDirection="column" alignItems="space-between">
               <Box>
                 <Text>
                   Blog of <strong>{author}</strong> who lives and works in
