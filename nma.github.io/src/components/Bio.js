@@ -32,8 +32,8 @@ function Bio(props) {
             <Flex flexDirection="column" alignItems="space-between">
               <Box>
                 <Text>
-                  Blog of <strong>{author}</strong> who lives and works in
-                  Toronto tinkering.
+                  Written by <strong>{author}</strong>🤓, he like learning
+                  boring complicated stuff and making it sound easy. 💻 🤔
                   {` `}
                   <a href={`https://twitter.com/${social.twitter}`}>
                     You should follow him on Twitter

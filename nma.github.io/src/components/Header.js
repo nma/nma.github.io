@@ -23,7 +23,7 @@ const Header = () => {
         justifyContent="center"
       >
         <Flex
-          width={['36em', '48em', '64em']}
+          width={['36em', '48em', '54em']}
           justifyContent="space-between"
           py={4}
         >

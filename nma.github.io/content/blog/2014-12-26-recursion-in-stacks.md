@@ -1,5 +1,6 @@
 ---
 title: 'Thinking about Recursion in Stacks'
+date: '2014-12-26'
 description: 'Small epiphany on other ways to reason about recursion'
 category: 'Interviews'
 tags: ['Interviews']
@@ -16,11 +17,11 @@ Start traversing the tree from the top, first print the value of the current nod
 {% highlight python linenos=table %}
 def postorder(root):
 print root.value
-  
- if root.left is not None:
+
+if root.left is not None:
 postorder(root.left)
-  
- if root.right is not None:
+
+if root.right is not None:
 postorder(root.right)
 
     return
@@ -42,8 +43,8 @@ We can now write a method to iteratively keep track of the traversal order with 
 {% highlight python linenos=table %}
 def postorder(root): # using a list as a stack
 stack = []
-  
- if root is not None:
+
+if root is not None:
 stack.append(root)
 
     while len(stack) != 0:

@@ -108,7 +108,7 @@ const parsePost = (author, defaultImage) => postFromGraphql => {
 
 const edgeToArray = data => data.edges.map(edge => edge.node)
 
-const OtherWriting = () => (
+const FeaturedWriting = () => (
   <StaticQuery
     query={graphql`
       query MediumPostQuery {
@@ -157,10 +157,10 @@ const OtherWriting = () => (
 
       return (
         isMediumUserDefined && (
-          <Box mb={[2, 3, 6]}>
+          <Box mb={[2, 5]}>
             <CardContainer minWidth="275px">
               {posts.map(({ Component, ...rest }) => (
-                <Fade bottom key={rest.id}>
+                <Fade left key={rest.id}>
                   <Component {...rest} key={rest.id} />
                 </Fade>
               ))}
@@ -173,12 +173,7 @@ const OtherWriting = () => (
 )
 
 const PostList = ({ posts }) => (
-  <Flex
-    alignItems="center"
-    width={['36em', '48em', '64em']}
-    mx="auto"
-    flexDirection="column"
-  >
+  <Flex alignItems="center" mx="auto" flexDirection="column">
     {posts.map(({ node }) => {
       const title = node.frontmatter.title || node.fields.slug
       return (
@@ -198,11 +193,11 @@ const PostList = ({ posts }) => (
 
 const Writing = ({ posts }) => (
   <Flex flexDirection="row" justifyContent="center" alignItems="center">
-    <Box width={['36em', '48em', '64em']}>
+    <Box width={['36em', '48em', '54em']}>
       <Head1 my={[1, 3, 4]}>Blog</Head1>
+      <FeaturedWriting />
+      <Head2 my={[1, 3, 4]}>Tips and Tricks</Head2>
       <PostList posts={posts} />
-      <Head2 my={[1, 3, 4]}>Other Writing</Head2>
-      <OtherWriting />
     </Box>
   </Flex>
 )
