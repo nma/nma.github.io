@@ -160,7 +160,7 @@ const FeaturedWriting = () => (
           <Box mb={[2, 5]}>
             <CardContainer minWidth="275px">
               {posts.map(({ Component, ...rest }) => (
-                <Fade left key={rest.id}>
+                <Fade right key={rest.id}>
                   <Component {...rest} key={rest.id} />
                 </Fade>
               ))}
