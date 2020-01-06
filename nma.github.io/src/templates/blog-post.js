@@ -6,6 +6,7 @@ import Bio from '../components/Bio';
 import Layout from '../components/Layout';
 import Header from '../components/Header';
 import CenterImage from '../components/CenterImage';
+import Footer from '../components/Footer';
 import { Text, Head1 } from '../components/Text';
 import { Container } from '../components/primitives';
 import SEO from '../components/seo';
@@ -23,8 +24,8 @@ class BlogPostTemplate extends React.Component {
         <CenterImage />
         <Flex flexDirection="row" justifyContent="center" alignItems="center">
           <Container>
-            <Head1>{post.frontmatter.title}</Head1>
-            <Text>{post.frontmatter.date}</Text>
+            <Head1 py={4}>{post.frontmatter.title}</Head1>
+            <Text mb={2}>{post.frontmatter.date}</Text>
 
             <div dangerouslySetInnerHTML={{ __html: post.html }} />
             <hr
@@ -36,6 +37,7 @@ class BlogPostTemplate extends React.Component {
             <BlogFooter next={next} previous={previous} />
           </Container>
         </Flex>
+        <Footer />
       </Layout>
     );
   }

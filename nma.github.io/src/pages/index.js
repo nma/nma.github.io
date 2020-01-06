@@ -1,20 +1,20 @@
 // @flow
-import React from 'react'
-import { graphql } from 'gatsby'
+import React from 'react';
+import { graphql } from 'gatsby';
 
-import Layout from '../components/Layout'
-import SEO from '../components/seo'
-import Header from '../components/Header'
-import CenterImage from '../components/CenterImage'
-import Writing from '../components/Writing'
+import Layout from '../components/Layout';
+import SEO from '../components/seo';
+import Header from '../components/Header';
+import CenterImage from '../components/CenterImage';
+import Writing from '../components/Writing';
 // import About from '../components/About'
-import { Box, Flex, Heading } from 'rebass'
+import Footer from '../components/Footer';
 
 class BlogIndex extends React.Component {
   render() {
-    const { data } = this.props
-    const siteTitle = data.site.siteMetadata.title
-    const posts = data.allMarkdownRemark.edges
+    const { data } = this.props;
+    const siteTitle = data.site.siteMetadata.title;
+    const posts = data.allMarkdownRemark.edges;
 
     return (
       <Layout location={this.props.location} title={siteTitle}>
@@ -33,12 +33,13 @@ class BlogIndex extends React.Component {
           <Bio />
         </Flex> */}
         <Writing posts={posts} />
+        <Footer />
       </Layout>
-    )
+    );
   }
 }
 
-export default BlogIndex
+export default BlogIndex;
 
 export const pageQuery = graphql`
   query {
@@ -62,4 +63,4 @@ export const pageQuery = graphql`
       }
     }
   }
-`
+`;
