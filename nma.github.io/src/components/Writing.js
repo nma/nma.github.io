@@ -1,25 +1,25 @@
-import React from 'react'
-import styled from 'styled-components'
-import { Link } from 'gatsby'
-import { Flex, Box } from 'rebass'
-import { Head1, Head2, Head3, Text } from './Text'
-import PropTypes from 'prop-types'
-import Fade from 'react-reveal/Fade'
-import { StaticQuery, graphql } from 'gatsby'
-import { CardContainer, Card } from './Card'
-import { themeGet } from '@styled-system/theme-get'
-import { PositionBox } from './primitives'
+import React from 'react';
+import styled from 'styled-components';
+import { Link } from 'gatsby';
+import { Flex, Box } from 'rebass';
+import { Head1, Head2, Head3, Text } from './Text';
+import PropTypes from 'prop-types';
+import Fade from 'react-reveal/Fade';
+import { StaticQuery, graphql } from 'gatsby';
+import { CardContainer, Card } from './Card';
+import { themeGet } from '@styled-system/theme-get';
+import { PositionBox, Container } from './primitives';
 
-export const getColor = colorKey => themeGet(`colors.${colorKey}`)
+export const getColor = colorKey => themeGet(`colors.${colorKey}`);
 
-const MEDIUM_CDN = 'https://cdn-images-1.medium.com/max/400'
-const MEDIUM_URL = 'https://medium.com'
+const MEDIUM_CDN = 'https://cdn-images-1.medium.com/max/400';
+const MEDIUM_URL = 'https://medium.com';
 
 const CoverImage = styled.img`
   width: 100%;
   object-fit: cover;
   margin-bottom: 0;
-`
+`;
 
 const EllipsisHeading = styled(Head3).attrs({
   textTransform: 'lowercase',
@@ -30,7 +30,7 @@ const EllipsisHeading = styled(Head3).attrs({
   display: -webkit-inline-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
-`
+`;
 
 const PostBodyTagBox = styled(Box)`
   display: inline-block;
@@ -44,7 +44,7 @@ const PostBodyTagBox = styled(Box)`
     ${getColor('brand-primary')} 0,
     ${getColor('brand-primary-offset')} 100%
   );
-`
+`;
 
 const PostTag = ({ tagBody }) => (
   <PostBodyTagBox>
@@ -52,11 +52,11 @@ const PostTag = ({ tagBody }) => (
       {tagBody}
     </Head3>
   </PostBodyTagBox>
-)
+);
 
 PostTag.propTypes = {
   tagBody: PropTypes.string.isRequired,
-}
+};
 
 const Post = ({ title, text, image, url, date, time }) => (
   <Card
@@ -77,7 +77,7 @@ const Post = ({ title, text, image, url, date, time }) => (
       </Box>
     </Box>
   </Card>
-)
+);
 
 Post.propTypes = {
   title: PropTypes.string.isRequired,
@@ -86,13 +86,13 @@ Post.propTypes = {
   url: PropTypes.string.isRequired,
   date: PropTypes.string.isRequired,
   time: PropTypes.number.isRequired,
-}
+};
 
 const parsePost = (author, defaultImage) => postFromGraphql => {
-  const { id, uniqueSlug, createdAt, title, virtuals } = postFromGraphql
+  const { id, uniqueSlug, createdAt, title, virtuals } = postFromGraphql;
   const image = virtuals.previewImage.imageId
     ? `${MEDIUM_CDN}/${virtuals.previewImage.imageId}`
-    : defaultImage.childImageSharp.fixed.src
+    : defaultImage.childImageSharp.fixed.src;
 
   return {
     id,
@@ -103,10 +103,10 @@ const parsePost = (author, defaultImage) => postFromGraphql => {
     image,
     url: `${MEDIUM_URL}/${author.username}/${uniqueSlug}`,
     Component: Post,
-  }
-}
+  };
+};
 
-const edgeToArray = data => data.edges.map(edge => edge.node)
+const edgeToArray = data => data.edges.map(edge => edge.node);
 
 const FeaturedWriting = () => (
   <StaticQuery
@@ -151,9 +151,9 @@ const FeaturedWriting = () => (
     render={({ allMediumPost, site, author, featuredPostImage }) => {
       const posts = edgeToArray(allMediumPost).map(
         parsePost(author, featuredPostImage)
-      )
+      );
 
-      const { isMediumUserDefined } = site.siteMetadata
+      const { isMediumUserDefined } = site.siteMetadata;
 
       return (
         isMediumUserDefined && (
@@ -167,13 +167,13 @@ const FeaturedWriting = () => (
             </CardContainer>
           </Box>
         )
-      )
+      );
     }}
   />
-)
+);
 
 const PostItem = ({ node }) => {
-  const title = node.frontmatter.title || node.fields.slug
+  const title = node.frontmatter.title || node.fields.slug;
   return (
     <Box mb={3} key={node.fields.slug}>
       <Head3 pb={1} color="brand-secondary">
@@ -191,8 +191,8 @@ const PostItem = ({ node }) => {
       </small>
       <Text py={1} mb={3} dangerouslySetInnerHTML={{ __html: node.excerpt }} />
     </Box>
-  )
-}
+  );
+};
 
 const PostList = ({ posts }) => (
   <Flex alignItems="center" mx="auto" flexDirection="column">
@@ -200,17 +200,17 @@ const PostList = ({ posts }) => (
       <PostItem node={node} />
     ))}
   </Flex>
-)
+);
 
 const Writing = ({ posts }) => (
   <Flex flexDirection="row" justifyContent="center" alignItems="center">
-    <Box p={4} width={['36em', '48em', '54em']}>
+    <Container>
       <Head1 my={[4]}>Blog</Head1>
       <FeaturedWriting />
       <Head2 my={[4]}>Tips and Tricks</Head2>
       <PostList posts={posts} />
-    </Box>
+    </Container>
   </Flex>
-)
+);
 
-export default Writing
+export default Writing;

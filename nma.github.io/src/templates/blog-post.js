@@ -1,39 +1,43 @@
-import React from 'react'
-import { Link, graphql } from 'gatsby'
-import { Box } from 'rebass'
+import React from 'react';
+import { Link, graphql } from 'gatsby';
+import { Box, Flex } from 'rebass';
 
-import Bio from '../components/Bio'
-import Layout from '../components/Layout'
-import Header from '../components/Header'
-import CenterImage from '../components/CenterImage'
-import { Text } from '../components/Text'
-import SEO from '../components/seo'
+import Bio from '../components/Bio';
+import Layout from '../components/Layout';
+import Header from '../components/Header';
+import CenterImage from '../components/CenterImage';
+import { Text, Head1 } from '../components/Text';
+import { Container } from '../components/primitives';
+import SEO from '../components/seo';
 
 class BlogPostTemplate extends React.Component {
   render() {
-    const post = this.props.data.markdownRemark
-    const siteTitle = this.props.data.site.siteMetadata.title
-    const { previous, next } = this.props.pageContext
+    const post = this.props.data.markdownRemark;
+    const siteTitle = this.props.data.site.siteMetadata.title;
+    const { previous, next } = this.props.pageContext;
 
     return (
       <Layout location={this.props.location} title={siteTitle}>
         <SEO title={post.frontmatter.title} description={post.excerpt} />
         <Header />
         <CenterImage />
-        <Box width={['36em', '48em', '54em']} p={4}>
-          <h1>{post.frontmatter.title}</h1>
-          <Text>{post.frontmatter.date}</Text>
-          <div dangerouslySetInnerHTML={{ __html: post.html }} />
-          <hr
-            style={{
-              marginBottom: '12px',
-            }}
-          />
-          <Bio />
-          <BlogFooter next={next} previous={previous} />
-        </Box>
+        <Flex flexDirection="row" justifyContent="center" alignItems="center">
+          <Container>
+            <Head1>{post.frontmatter.title}</Head1>
+            <Text>{post.frontmatter.date}</Text>
+
+            <div dangerouslySetInnerHTML={{ __html: post.html }} />
+            <hr
+              style={{
+                marginBottom: '12px',
+              }}
+            />
+            <Bio />
+            <BlogFooter next={next} previous={previous} />
+          </Container>
+        </Flex>
       </Layout>
-    )
+    );
   }
 }
 
@@ -62,9 +66,9 @@ const BlogFooter = ({ previous, next }) => (
       )}
     </li>
   </ul>
-)
+);
 
-export default BlogPostTemplate
+export default BlogPostTemplate;
 
 export const pageQuery = graphql`
   query BlogPostBySlug($slug: String!) {
@@ -84,4 +88,4 @@ export const pageQuery = graphql`
       }
     }
   }
-`
+`;

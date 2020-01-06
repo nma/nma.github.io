@@ -1,4 +1,4 @@
-export default {
+const theme = {
   breakpoints: ['32em', '48em', '64em'],
   space: [0, 4, 8, 16, 32, 64, 128, 256, 512],
   // space: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
@@ -32,7 +32,7 @@ export default {
     '32px solid',
   ],
   radii: [0, 2, 4, 16, 9999, '100%'],
-  sizes: [16, 32, 48, 64, 128, 256, 512, 1024, 1200, '100%'],
+  sizes: [0, '32em', '48em', '54em', '64em', '100%'],
   colors: {
     black: '#000e1a',
     white: '#fff',
@@ -48,4 +48,6 @@ export default {
     'brand-primary': '#6FCF97',
     'brand-primary-offset': '#66D2EA',
   },
-}
+};
+
+export default theme;
