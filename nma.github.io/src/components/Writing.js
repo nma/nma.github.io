@@ -9,7 +9,6 @@ import { StaticQuery, graphql } from 'gatsby'
 import { CardContainer, Card } from './Card'
 import { themeGet } from '@styled-system/theme-get'
 import { PositionBox } from './primitives'
-// import { LinkAnimated } from './LinkAnimated'
 
 export const getColor = colorKey => themeGet(`colors.${colorKey}`)
 

@@ -14,8 +14,8 @@ function Bio(props) {
         const { author, social } = data.site.siteMetadata
         return (
           <Flex
-            width={['36em', '48em', '64em']}
-            py={4}
+            width={['36em', '48em', '54em']}
+            p={4}
             alignItems="center"
             {...props}
           >
