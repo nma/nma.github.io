@@ -25,14 +25,14 @@ const Header = () => {
         <Flex
           width={['36em', '48em', '54em']}
           justifyContent="space-between"
-          py={4}
+          p={4}
         >
           <Flex>
             <RouteLink name="Nick Ma" />
           </Flex>
           <Flex>
             <RouteLink name="About" />
-            <RouteLink ml={[0, 2, 4]} name="Blog" />
+            <RouteLink ml={[1, 2, 4]} name="Blog" />
             {/* <RouteLink name="Projects" /> */}
           </Flex>
         </Flex>

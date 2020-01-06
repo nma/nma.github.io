@@ -9,6 +9,7 @@ import { StaticQuery, graphql } from 'gatsby'
 import { CardContainer, Card } from './Card'
 import { themeGet } from '@styled-system/theme-get'
 import { PositionBox } from './primitives'
+// import { LinkAnimated } from './LinkAnimated'
 
 export const getColor = colorKey => themeGet(`colors.${colorKey}`)
 
@@ -157,7 +158,7 @@ const FeaturedWriting = () => (
 
       return (
         isMediumUserDefined && (
-          <Box mb={[2, 5]}>
+          <Box mb={[4, 5]}>
             <CardContainer minWidth="275px">
               {posts.map(({ Component, ...rest }) => (
                 <Fade right key={rest.id}>
@@ -172,31 +173,42 @@ const FeaturedWriting = () => (
   />
 )
 
+const PostItem = ({ node }) => {
+  const title = node.frontmatter.title || node.fields.slug
+  return (
+    <Box mb={3} key={node.fields.slug}>
+      <Head3 pb={1} color="brand-secondary">
+        <Link
+          style={{
+            boxShadow: 'none',
+          }}
+          to={node.fields.slug}
+        >
+          {title}
+        </Link>
+      </Head3>
+      <small>
+        <Text>{node.frontmatter.date}</Text>
+      </small>
+      <Text py={1} mb={3} dangerouslySetInnerHTML={{ __html: node.excerpt }} />
+    </Box>
+  )
+}
+
 const PostList = ({ posts }) => (
   <Flex alignItems="center" mx="auto" flexDirection="column">
-    {posts.map(({ node }) => {
-      const title = node.frontmatter.title || node.fields.slug
-      return (
-        <Box key={node.fields.slug}>
-          <Head3>
-            <Link style={{ boxShadow: `none` }} to={node.fields.slug}>
-              {title}
-            </Link>
-          </Head3>
-          <small>{node.frontmatter.date}</small>
-          <p dangerouslySetInnerHTML={{ __html: node.excerpt }} />
-        </Box>
-      )
-    })}
+    {posts.map(({ node }) => (
+      <PostItem node={node} />
+    ))}
   </Flex>
 )
 
 const Writing = ({ posts }) => (
   <Flex flexDirection="row" justifyContent="center" alignItems="center">
-    <Box width={['36em', '48em', '54em']}>
-      <Head1 my={[1, 3, 4]}>Blog</Head1>
+    <Box p={4} width={['36em', '48em', '54em']}>
+      <Head1 my={[4]}>Blog</Head1>
       <FeaturedWriting />
-      <Head2 my={[1, 3, 4]}>Tips and Tricks</Head2>
+      <Head2 my={[4]}>Tips and Tricks</Head2>
       <PostList posts={posts} />
     </Box>
   </Flex>

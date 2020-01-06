@@ -1,13 +1,11 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { ThemeProvider } from 'styled-components'
 import PropTypes from 'prop-types'
-import { Flex, Box, Card } from 'rebass'
 import theme from '../utils/theme'
 
 class Layout extends React.Component {
   render() {
-    const { location, title, children } = this.props
-    const rootPath = `${__PATH_PREFIX__}/`
+    const { children } = this.props
 
     return (
       <main>

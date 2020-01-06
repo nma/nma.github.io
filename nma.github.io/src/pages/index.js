@@ -2,7 +2,6 @@
 import React from 'react'
 import { graphql } from 'gatsby'
 
-import Bio from '../components/Bio'
 import Layout from '../components/Layout'
 import SEO from '../components/seo'
 import Header from '../components/Header'
