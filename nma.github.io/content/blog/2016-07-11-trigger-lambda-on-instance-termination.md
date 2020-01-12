@@ -1,9 +1,9 @@
 ---
 title: 'Trigger Lambda on Instance Termination.'
 date: '2016-07-11'
-description: 'AWS tips'
-category: 'tutorial'
-tags: ['aws', 'lambda']
+description: 'AWS EC2 lambda trigger'
+category: 'Tutorial'
+tags: ['AWS', 'lambda']
 ---
 
 # Introduction

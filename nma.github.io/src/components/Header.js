@@ -3,14 +3,21 @@ import { Flex } from 'rebass';
 import Headroom from 'react-headroom';
 import { ThemeContext } from 'styled-components';
 import styled from 'styled-components';
+import { Box } from 'rebass';
+
 import RouteLink from './RouteLink';
-import { ShadowFlex, Container } from './primitives';
+import { ShadowFlex } from './primitives';
 
 const HeaderContainer = styled(Headroom)`
   background: ${props => props.theme.colors['white']};
   position: absolute;
   width: 100%;
 `;
+
+export const HeadSizeContainer = styled(Box).attrs({
+  p: 4,
+  width: ['100%', '100%', '960px'],
+})``;
 
 const Header = () => {
   const themeContext = useContext(ThemeContext);
@@ -22,7 +29,7 @@ const Header = () => {
         boxShadow="0px 0px 10px 0px rgba(8,8,8,0.25)"
         justifyContent="center"
       >
-        <Container>
+        <HeadSizeContainer>
           <Flex justifyContent="space-between">
             <Flex>
               <RouteLink name="Nick Ma" />
@@ -33,7 +40,7 @@ const Header = () => {
               {/* <RouteLink name="Projects" /> */}
             </Flex>
           </Flex>
-        </Container>
+        </HeadSizeContainer>
       </ShadowFlex>
     </HeaderContainer>
   );

@@ -2,8 +2,8 @@
 title: 'Vim Save as Sudo'
 date: '2016-07-07'
 description: ''
-category: ''
-tags: []
+category: 'Tips'
+tags: ['terminal', 'vim']
 ---
 
 Have you ever had one of those days where you were trying to edit a config file and you realized that you were not

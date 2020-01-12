@@ -2,7 +2,7 @@
 title: 'Thinking about Recursion in Stacks'
 date: '2014-12-26'
 description: 'Small epiphany on other ways to reason about recursion'
-category: 'Interviews'
+category: 'Tip'
 tags: ['Interviews']
 ---
 

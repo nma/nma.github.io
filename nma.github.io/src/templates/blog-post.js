@@ -9,6 +9,7 @@ import CenterImage from '../components/CenterImage';
 import Footer from '../components/Footer';
 import { Text, Head1 } from '../components/Text';
 import { Container } from '../components/primitives';
+import { HeadSizeContainer } from '../components/Header';
 import SEO from '../components/seo';
 
 class BlogPostTemplate extends React.Component {
@@ -34,8 +35,12 @@ class BlogPostTemplate extends React.Component {
               }}
             />
             <Bio />
-            <BlogFooter next={next} previous={previous} />
           </Container>
+        </Flex>
+        <Flex flexDirection="row" justifyContent="center" alignItems="center">
+          <HeadSizeContainer>
+            <BlogFooter next={next} previous={previous} />
+          </HeadSizeContainer>
         </Flex>
         <Footer />
       </Layout>
@@ -78,6 +83,7 @@ export const pageQuery = graphql`
       siteMetadata {
         title
         author
+        siteUrl
       }
     }
     markdownRemark(fields: { slug: { eq: $slug } }) {
@@ -87,6 +93,9 @@ export const pageQuery = graphql`
       frontmatter {
         title
         date(formatString: "MMMM DD, YYYY")
+        description
+        category
+        tags
       }
     }
   }

@@ -8,6 +8,6 @@ export const BackgroundBox = styled(Box)(background);
 export const PositionBox = styled(Box)(position);
 
 export const Container = styled(Box).attrs({
-  p: 4,
-  width: ['100%', '48em', '54em'],
+  px: 4,
+  width: ['100%', '100%', '680px'],
 })``;

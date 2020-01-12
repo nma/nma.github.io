@@ -2,7 +2,7 @@
 title: 'Setup SSL on Heroku with letsencrypt and Rails'
 date: '2016-11-26'
 description: 'how to setup SSL works with letsencrypt'
-category: ''
+category: 'Tutorial'
 tags: ['Open Source', 'DevOps']
 ---
 

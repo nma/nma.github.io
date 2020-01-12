@@ -72,7 +72,7 @@ const Post = ({ title, text, image, url, date, time }) => (
       <Box p={4}>
         <EllipsisHeading>{title}</EllipsisHeading>
         <Text color="greyscale-black" fontSize={1} mt={2} lineHeight={2}>
-          {text}
+          {date}
         </Text>
       </Box>
     </Box>
