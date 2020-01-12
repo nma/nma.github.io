@@ -11,6 +11,7 @@ import { Text, Head1 } from '../components/Text';
 import { Container } from '../components/primitives';
 import { HeadSizeContainer } from '../components/Header';
 import SEO from '../components/seo';
+import markdownRenderer from '../components/MarkdownRenderer';
 
 class BlogPostTemplate extends React.Component {
   render() {
@@ -27,8 +28,7 @@ class BlogPostTemplate extends React.Component {
           <Container>
             <Head1 py={4}>{post.frontmatter.title}</Head1>
             <Text mb={2}>{post.frontmatter.date}</Text>
-
-            <div dangerouslySetInnerHTML={{ __html: post.html }} />
+            <Box>{markdownRenderer(post.htmlAst)}</Box>
             <hr
               style={{
                 marginBottom: '12px',
@@ -89,7 +89,7 @@ export const pageQuery = graphql`
     markdownRemark(fields: { slug: { eq: $slug } }) {
       id
       excerpt(pruneLength: 160)
-      html
+      htmlAst
       frontmatter {
         title
         date(formatString: "MMMM DD, YYYY")
