@@ -32,11 +32,11 @@ const Header = () => {
         <HeadSizeContainer>
           <Flex justifyContent="space-between">
             <Flex>
-              <RouteLink name="Nick Ma" />
+              <RouteLink to="/" name="Nick Ma" />
             </Flex>
             <Flex>
               {/* <RouteLink name="About" /> */}
-              <RouteLink ml={[1, 2, 4]} name="Blog" />
+              <RouteLink to="/" ml={[1, 2, 4]} name="Blog" />
               {/* <RouteLink name="Projects" /> */}
             </Flex>
           </Flex>

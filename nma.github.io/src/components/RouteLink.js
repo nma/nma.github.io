@@ -3,16 +3,16 @@ import PropTypes from 'prop-types';
 import LinkAnimated from './LinkAnimated';
 import { Head2 } from './Text';
 
-const RouteLink = ({ onClick, selected, name, ...rest }) => (
+const RouteLink = ({ to, selected = false, name, ...rest }) => (
   <Head2 py={0} fontSize={[3, 4]} color="black" {...rest}>
-    <LinkAnimated onClick={onClick} selected={selected}>
+    <LinkAnimated to={to} selected={selected}>
       {name}
     </LinkAnimated>
   </Head2>
 );
 
 RouteLink.propTypes = {
-  onClick: PropTypes.func,
+  to: PropTypes.string,
   selected: PropTypes.bool,
   name: PropTypes.string,
 };
