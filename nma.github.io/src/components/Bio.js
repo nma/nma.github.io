@@ -29,7 +29,7 @@ function Bio() {
               <Flex flexDirection="column" alignItems="space-between">
                 <Box>
                   <Text>
-                    Written by <strong>{author}</strong>🤓, he like learning
+                    Written by <strong>{author}</strong> 🤓, who likes learning
                     boring complicated stuff and making it sound easy. 💻 🤔
                     {` `}
                     <a href={`https://twitter.com/${social.twitter}`}>
