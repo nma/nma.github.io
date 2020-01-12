@@ -9,6 +9,7 @@ import { StaticQuery, graphql } from 'gatsby';
 import { CardContainer, Card } from './Card';
 import { themeGet } from '@styled-system/theme-get';
 import { PositionBox, Container } from './primitives';
+import { Alarm } from './Icons';
 
 export const getColor = colorKey => themeGet(`colors.${colorKey}`);
 
@@ -71,8 +72,14 @@ const Post = ({ title, text, image, url, date, time }) => (
       {image && <CoverImage src={image} height="200px" alt={title} />}
       <Box p={4}>
         <EllipsisHeading>{title}</EllipsisHeading>
-        <Text color="greyscale-black" fontSize={1} mt={2} lineHeight={2}>
-          {date}
+        <Flex color="greyscale-dark">
+          <Alarm alignSelf="center" mr={2} />
+          <Text py={0} fontSize={2}>
+            {date}
+          </Text>
+        </Flex>
+        <Text color="greyscale-darker" mt={1} lineheight={2}>
+          {text}
         </Text>
       </Box>
     </Box>
@@ -119,7 +126,7 @@ const FeaturedWriting = () => (
         }
         featuredPostImage: file(absolutePath: { regex: "/business-cat.png/" }) {
           childImageSharp {
-            fixed(width: 275) {
+            fixed(width: 480) {
               ...GatsbyImageSharpFixed
             }
           }
@@ -176,7 +183,7 @@ const PostItem = ({ node }) => {
   const title = node.frontmatter.title || node.fields.slug;
   return (
     <Box mb={3} key={node.fields.slug}>
-      <Head3 pb={1} color="brand-secondary">
+      <Head3 pb={0} color="brand-secondary">
         <Link
           style={{
             boxShadow: 'none',
@@ -187,7 +194,7 @@ const PostItem = ({ node }) => {
         </Link>
       </Head3>
       <small>
-        <Text>{node.frontmatter.date}</Text>
+        <Text py={1}>{node.frontmatter.date}</Text>
       </small>
       <Text py={1} mb={3} dangerouslySetInnerHTML={{ __html: node.excerpt }} />
     </Box>
@@ -207,7 +214,7 @@ const Writing = ({ posts }) => (
     <Container>
       <Head1 my={[4]}>Blog</Head1>
       <FeaturedWriting />
-      <Head2 my={[4]}>Tips and Tricks</Head2>
+      <Head2 my={[4]}>Tips and Tutorials</Head2>
       <PostList posts={posts} />
     </Container>
   </Flex>
