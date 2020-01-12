@@ -8,7 +8,7 @@ import Header from '../components/Header';
 import CenterImage from '../components/CenterImage';
 import Footer from '../components/Footer';
 import { Text, Head1 } from '../components/Text';
-import { Container } from '../components/primitives';
+import { Container, Divider } from '../components/primitives';
 import { HeadSizeContainer } from '../components/Header';
 import SEO from '../components/seo';
 import markdownRenderer from '../components/MarkdownRenderer';
@@ -29,11 +29,7 @@ class BlogPostTemplate extends React.Component {
             <Head1 py={4}>{post.frontmatter.title}</Head1>
             <Text mb={2}>{post.frontmatter.date}</Text>
             <Box>{markdownRenderer(post.htmlAst)}</Box>
-            <hr
-              style={{
-                marginBottom: '12px',
-              }}
-            />
+            <Divider my={4} />
             <Bio />
           </Container>
         </Flex>

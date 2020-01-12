@@ -87,11 +87,11 @@ This is required or the host server will route from \*.herokuapp.com domain subs
  ;; MSG SIZE  rcvd: 256
 ```
 
-When your ANSWER SECTION is a CNAME redirect to example.herokuapp.com, the DNS server tells the browser that this is \*.herokuapp.com.
-Since your SSL is registered for www.example.com and not \*.herokuapp.com!
+When your `ANSWER SECTION` is a `CNAME` redirect to `example.herokuapp.com`, the DNS server tells the browser that this is `\*.herokuapp.com`.
+Since your SSL is registered for `www.example.com` and not `\*.herokuapp.com`!
 
 You need to change your DNS to point to the topmost DNS resolver as output by your `heroku domains` command.
-Then your DNS resolution will now return the correct www.example.com metadata for the SSL Cert to be validated.
+Then your DNS resolution will now return the correct `www.example.com` metadata for the SSL Cert to be validated.
 
 ```
 ; <<>> DiG 9.10.3-P4-Ubuntu <<>> www.example.org
