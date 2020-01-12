@@ -8,8 +8,6 @@ tags: ['Open Source', 'DevOps']
 
 So this weekend I had some time to help out on a opensource project manage by some awesome Toronto folks.
 
-Task breakdown as follows.
-
 The steps are as follows:
 
 - figure out how to setup the app for SSL or enforce SSL.

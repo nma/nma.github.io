@@ -27,7 +27,9 @@ class BlogPostTemplate extends React.Component {
         <Flex flexDirection="row" justifyContent="center" alignItems="center">
           <Container>
             <Head1 py={4}>{post.frontmatter.title}</Head1>
-            <Text mb={2}>{post.frontmatter.date}</Text>
+            <Text color="greyscale-dark" mb={2}>
+              {post.frontmatter.date}
+            </Text>
             <Box>{markdownRenderer(post.htmlAst)}</Box>
             <Divider my={4} />
             <Bio />
