@@ -50,6 +50,7 @@
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-plugin-react": "^7.13.0",
+    "gh-pages": "^2.2.0",
     "husky": "^2.3.0",
     "prettier": "^1.19.1",
     "pretty-quick": "^1.11.0"
@@ -68,6 +69,7 @@
     "precommit": "pretty-quick --staged",
     "postcommit": "git update-index -g",
     "pretty": "prettier --write \"./**/*.{js,jsx,json}\"",
+    "deploy": "gatbys build && gh-pages -d public -b master",
     "dev": "gatsby develop",
     "lint": "eslint --ext .js,.jsx --ignore-pattern public .",
     "test": "echo \"Write tests! -> https://gatsby.app/unit-testing\"",
