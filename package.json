@@ -3,7 +3,7 @@
   "private": true,
   "description": "A starter for a blog powered by Gatsby and Markdown",
   "version": "0.1.0",
-  "author": "Kyle Mathews <mathews.kyle@gmail.com>",
+  "author": "Nick Ma",
   "bugs": {
     "url": "https://github.com/gatsbyjs/gatsby/issues"
   },
@@ -69,7 +69,7 @@
     "precommit": "pretty-quick --staged",
     "postcommit": "git update-index -g",
     "pretty": "prettier --write \"./**/*.{js,jsx,json}\"",
-    "deploy": "gatbys build && gh-pages -d public -b master",
+    "deploy": "gatsby build && gh-pages -d public -b master",
     "dev": "gatsby develop",
     "lint": "eslint --ext .js,.jsx --ignore-pattern public .",
     "test": "echo \"Write tests! -> https://gatsby.app/unit-testing\"",
