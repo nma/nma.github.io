@@ -1,28 +1,394 @@
----
-layout: nil
-title : RSS Feed
----
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Blog]]></title><description><![CDATA[Nick Ma's blog.]]></description><link>https://nickma.com</link><generator>GatsbyJS</generator><lastBuildDate>Wed, 22 Jan 2020 03:43:58 GMT</lastBuildDate><item><title><![CDATA[Setup SSL on Heroku with letsencrypt and Rails]]></title><description><![CDATA[So this weekend I had some time to help out on a opensource project manage by some awesome Toronto folks. The steps are as follows: figure…]]></description><link>https://nickma.com/2016/11/26/setup-ssl-on-heroku-with-letsencrypt</link><guid isPermaLink="false">https://nickma.com/2016/11/26/setup-ssl-on-heroku-with-letsencrypt</guid><pubDate>Sat, 26 Nov 2016 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;So this weekend I had some time to help out on a opensource project manage by some awesome Toronto folks.&lt;/p&gt;
+&lt;p&gt;The steps are as follows:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;figure out how to setup the app for SSL or enforce SSL.&lt;/li&gt;
+&lt;li&gt;how to test it properly without downtime? because SSL is tied to a domain this mean the quickest way to test is on production.&lt;/li&gt;
+&lt;li&gt;figure out how heroku SSL solutions.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Enforce SSL and Testing&lt;/h2&gt;
+&lt;p&gt;In Rails the way that SSL is enforced is set in a config file, this would be the following path &lt;code class=&quot;language-text&quot;&gt;config/environments/production.rb&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ruby&quot;&gt;&lt;pre class=&quot;language-ruby&quot;&gt;&lt;code class=&quot;language-ruby&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+config&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;force_ssl &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;# This is required or the host server will send headers telling us its from the *.herokuapp.com domain&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;# subsequently, this will cause the SSL certs registered for our private DNS address to fail.&lt;/span&gt;
+config&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;action_controller&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;default_url_options &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; host&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;www.example.org&quot;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+config&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;action_controller&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;asset_host &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;www.example.org&quot;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;By default SSL is an optional protocol to the webapp, a user can direct to &lt;code class=&quot;language-text&quot;&gt;http://&lt;/code&gt; or &lt;code class=&quot;language-text&quot;&gt;https://&lt;/code&gt;, but websites also need a DNS change to redirect &lt;code class=&quot;language-text&quot;&gt;http://&lt;/code&gt; -&gt; &lt;code class=&quot;language-text&quot;&gt;https://&lt;/code&gt;.
+For most servers we also need to enable the endpoint/port, because regular web traffic routes on &lt;code class=&quot;language-text&quot;&gt;:80&lt;/code&gt;, but https requires &lt;code class=&quot;language-text&quot;&gt;:443&lt;/code&gt; by convention. Rails will perform the redirect when &lt;em&gt;force&lt;/em&gt;ssl_ is set to true.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;In Heroku… An alternative SSL implementation is available via the SSL Endpoint add-on. The SSL Endpoint add-on is only recommended if you need to support legacy browser clients which do not support SNI. It also costs another $20/mo to enable.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Since most of this projects users won’t be using legacy browsers, we drop the clunky SSL Endpoint and go with the SNI version. Much faster and friendlier!
+Don’t worry too much about the distinction, but if you must here is a &lt;a href=&quot;https://en.wikipedia.org/wiki/Server_Name_Indication&quot;&gt;wiki link&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Now to allow this functionality Heroku requests that you direct your app’s DNS to a specific DNS name, which then resolves your application server so that it hits your server with an internal IP.
+When you just hit the app at &lt;code class=&quot;language-text&quot;&gt;example.heroku.com&lt;/code&gt;, you are hitting the app at the top level heroku DNS router.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;$&amp;gt; heroku domains
+=== example Heroku Domain
+example.herokuapp.com
 
-<?xml version="1.0" encoding="UTF-8" ?>
-<rss version="2.0">
-<channel>
-        <title>{{ site.title }}</title>
-        <description>{{ site.title }} - {{ site.author.name }}</description>
-        <link>{{ site.production_url }}{{ site.rss_path }}</link>
-        <link>{{ site.production_url }}</link>
-        <lastBuildDate>{{ site.time | date_to_xmlschema }}</lastBuildDate>
-        <pubDate>{{ site.time | date_to_xmlschema }}</pubDate>
-        <ttl>1800</ttl>
+=== example Custom Domains
+Domain Name       DNS Target
+────────────────  ──────────────────────────────
+example.me      example.me.herokudns.com
+www.example.me  www.example.me.herokudns.com&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This is required or the host server will route from *.herokuapp.com domain subsequently, this will cause the SSL certs registered for our private DNS address to fail.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt; dig www.example.org
 
-{% for post in site.posts %}
-        <item>
-                <title>{{ post.title }}</title>
-                <description>{{ post.content | xml_escape }}</description>
-                <link>{{ site.production_url }}{{ post.url }}</link>
-                <guid>{{ site.production_url }}{{ post.id }}</guid>
-                <pubDate>{{ post.date | date_to_xmlschema }}</pubDate>
-        </item>
-{% endfor %}
+ ; &amp;lt;&amp;lt;&amp;gt;&amp;gt; DiG 9.10.3-P4-Ubuntu &amp;lt;&amp;lt;&amp;gt;&amp;gt; www.if-me.org
+ ;; global options: +cmd
+ ;; Got answer:
+ ;; -&amp;gt;&amp;gt;HEADER&amp;lt;&amp;lt;- opcode: QUERYundefined status: NOERRORundefined id: 23689
+ ;; flags: qr rd ra; QUERY: 1undefined ANSWER: 3undefined AUTHORITY: 4undefined ADDITIONAL: 1
 
-</channel>
-</rss>
+ ;; OPT PSEUDOSECTION:
+ ; EDNS: version: 0undefined flags:; udp: 1280
+ ;; QUESTION SECTION:
+ ;www.example.org.            IN  A
+
+ ;; ANSWER SECTION:
+ www.example.org.     1800    IN  CNAME   example.herokuapp.com.
+ example.herokuapp.com.    300 IN  CNAME   us-east-1-a.route.herokuapp.com.
+ us-east-1-a.route.herokuapp.com. 50 IN A   1.2.188.105
+
+ ;; AUTHORITY SECTION:
+ herokuapp.com.     400 IN  NS  ns-505.awsdns-63.com.
+ herokuapp.com.     400 IN  NS  ns-662.awsdns-18.net.
+ herokuapp.com.     400 IN  NS  ns-1378.awsdns-44.org.
+ herokuapp.com.     400 IN  NS  ns-1624.awsdns-11.co.uk.
+
+ ;; Query time: 218 msec
+ ;; SERVER: 127.0.1.1#53(127.0.1.1)
+ ;; WHEN: Sun Nov 27 00:52:12 EST 2016
+ ;; MSG SIZE  rcvd: 256&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;When your &lt;code class=&quot;language-text&quot;&gt;ANSWER SECTION&lt;/code&gt; is a &lt;code class=&quot;language-text&quot;&gt;CNAME&lt;/code&gt; redirect to &lt;code class=&quot;language-text&quot;&gt;example.herokuapp.com&lt;/code&gt;, the DNS server tells the browser that this is &lt;code class=&quot;language-text&quot;&gt;\*.herokuapp.com&lt;/code&gt;.
+Since your SSL is registered for &lt;code class=&quot;language-text&quot;&gt;www.example.com&lt;/code&gt; and not &lt;code class=&quot;language-text&quot;&gt;\*.herokuapp.com&lt;/code&gt;!&lt;/p&gt;
+&lt;p&gt;You need to change your DNS to point to the topmost DNS resolver as output by your &lt;code class=&quot;language-text&quot;&gt;heroku domains&lt;/code&gt; command.
+Then your DNS resolution will now return the correct &lt;code class=&quot;language-text&quot;&gt;www.example.com&lt;/code&gt; metadata for the SSL Cert to be validated.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;; &amp;lt;&amp;lt;&amp;gt;&amp;gt; DiG 9.10.3-P4-Ubuntu &amp;lt;&amp;lt;&amp;gt;&amp;gt; www.example.org
+;; global options: +cmd
+;; Got answer:
+;; -&amp;gt;&amp;gt;HEADER&amp;lt;&amp;lt;- opcode: QUERYundefined status: NOERRORundefined id: 43572
+;; flags: qr rd ra; QUERY: 1undefined ANSWER: 9undefined AUTHORITY: 4undefined ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0undefined flags:; udp: 1280
+;; QUESTION SECTION:
+;www.example.org.      IN  A
+
+;; ANSWER SECTION:
+www.example.org.   1800    IN  CNAME   www.example.org.herokudns.com.
+www.example.org.herokudns.com. 60 IN   A   54.243.119.83
+www.example.org.herokudns.com. 60 IN   A   54.243.91.166
+www.example.org.herokudns.com. 60 IN   A   54.561.252.234
+www.example.org.herokudns.com. 60 IN   A   50.19.93.247
+www.example.org.herokudns.com. 60 IN   A   54.565.193.561
+www.example.org.herokudns.com. 60 IN   A   54.565.563.184
+www.example.org.herokudns.com. 60 IN   A   54.235.135.158
+www.example.org.herokudns.com. 60 IN   A   54.235.212.238
+
+;; AUTHORITY SECTION:
+herokudns.com.      123094  IN  NS  ns-44.awsdns-05.com.
+herokudns.com.      123094  IN  NS  ns-955.awsdns-55.net.
+herokudns.com.      123094  IN  NS  ns-1260.awsdns-29.org.
+herokudns.com.      123094  IN  NS  ns-1672.awsdns-17.co.uk.
+
+;; Query time: 69 msec
+;; SERVER: 127.0.1.1#53(127.0.1.1)
+;; WHEN: Sun Nov 27 00:57:16 EST 2016
+;; MSG SIZE  rcvd: 353&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Check #1.&lt;/p&gt;
+&lt;p&gt;To test SSL we don’t need to enforce SSL to test that it works, we can in theory setup SSL certs but don’t enforce it, this way
+our app can still stay in production to serve regular http request without anything breaking.&lt;/p&gt;
+&lt;p&gt;All we need to do is just hit it with &lt;code class=&quot;language-text&quot;&gt;https://&lt;/code&gt; and see if the cert breaks or not. The normal traffic will just flow from &lt;code class=&quot;language-text&quot;&gt;http://&lt;/code&gt; without an issues.&lt;/p&gt;
+&lt;p&gt;Check #2.&lt;/p&gt;
+&lt;h2&gt;SSL options&lt;/h2&gt;
+&lt;p&gt;Last step is to browse through the SSL options we are given.&lt;/p&gt;
+&lt;p&gt;The initial options are given to me with a Heroku plugin called:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ExpediateSSL at $15/month. This gives you a SSL cert along with automagically integrating all the settings. Though it is a bit more black box.&lt;/li&gt;
+&lt;li&gt;Lets Encrypt + Heroku SSL SNI&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;ExpediateSSL most likely works by similar methods, as they have a video about setup in &lt;a href=&quot;https://www.youtube.com/watch?v=OcyR7Yus4pc&quot;&gt;3 minute setup&lt;/a&gt;, but some issues made it not work, so I checked out the alternative setup.
+The issue seems to be that, expediateSSL seems to require the SSL-Endpoint, so in the note on the documentation.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;NOTE: Expedited SSL works with your Heroku SSL Endpoint. If one is not already a part of your application, one will be added at its base monthly cost.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;In total, the expediated SSL + SSL-Endpoint runs at an additional $35/mo, since the app is still in the hobby phase, we can cut that cost with the letsencrypt method, until the day we actually need to support legacy browsers and have automated cert updates to CloudFront.&lt;/p&gt;
+&lt;p&gt;With a bit more doc reading (I am a weird person, I like reading docs while listening to &lt;a href=&quot;http://www.indieshuffle.com/playlists/readingdocs-115588/&quot;&gt;music&lt;/a&gt;.)
+We also have the service provided by letsencrypt, &lt;a href=&quot;https://letsencrypt.org/&quot;&gt;Let’s Encrypt&lt;/a&gt; is a free, automated, and open Certificate Authority.
+Their setup is a bit more involved, but it is well worth it! Plus this SSL knowledge can then be applied to every app idea you have thus forth.
+Personally I’m of the mentality to learn it the hard way, as infrastructure is black box most of the time. Gotta show that all the wasted time on reading tech docs isn’t actually a waste!&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Since Let’s Encrypt is backed by Chrome, Mozilla, Akamai
+and other major browser and CDN vendors, we can have a higher confidence that a browser update won’t redact our SSL certs. e.g. &lt;a href=&quot;https://sslmate.com/blog/post/ct_redaction_in_chrome_53&quot;&gt;Chrome 53 rejects Chase online bankings Symantec SSL Certs.&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;A sample of the setup I used is found on medium.com on a &lt;a href=&quot;https://medium.com/@franxyzxyz/setting-up-free-https-with-heroku-ssl-and-lets-encrypt-80cf6eac108e#.v9azmm96o&quot;&gt;letsencrypt example with heroku post&lt;/a&gt;,
+this tut meshes well with a sample that is tailored to rails apps &lt;a href=&quot;http://collectiveidea.com/blog/archives/2016/01/12/lets-encrypt-with-a-rails-app-on-heroku&quot;&gt;letsencrypt with heroku and rails&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Though essentially, the following steps were used.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;$&amp;gt; sudo apt-get install letsencrypt
+
+# Hit the above links for pictures!
+$&amp;gt; sudo letsencrypt certonly  --manual
+...
+Make sure your web server displays the following content at
+http://www.example.com/.well-known/acme-challenge/xxxxxxxxxxxx-yyyy.zzzzzzzzzzzzzzzzzzz before continuing:
+xxxxxxxxxxxx-yyyy.zzzzzzzzzzzzzzzzzzz
+If you don’t have HTTP server configuredundefined you can run the following
+command on the target server (as root):
+mkdir -p /tmp/certbot/public_html/.well-known/acme-challenge
+cd /tmp/certbot/public_html
+printf “%s” Gm35kFLiXnNtKT9OAOG_KPZvqMmYYAZU6DN-QRoGclg.s2I4ZV9Ne2CNtczlqXV9uw1ZdB5OSypG_cIdiuT7BwI &amp;gt; .well-known/acme-challenge/Gm35kFLiXnNtKT9OAOG_KPZvqMmYYAZU6DN-QRoGclg
+# run only once per server:
+$(command -v python2 || command -v python2.7 || command -v python2.6) -c \
+“import BaseHTTPServerundefined SimpleHTTPServer; \
+s = BaseHTTPServer.HTTPServer((‘’undefined 80)undefined SimpleHTTPServer.SimpleHTTPRequestHandler); \
+s.serve_forever()”
+Press ENTER to continue&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;In rails, add these files:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ruby&quot;&gt;&lt;pre class=&quot;language-ruby&quot;&gt;&lt;code class=&quot;language-ruby&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;# config/routes.rb&lt;/span&gt;
+get &lt;span class=&quot;token string&quot;&gt;&apos;/.well-known/acme-challenge/:id&apos;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;pages#letsencrypt&apos;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;In the controllers, add the following method.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ruby&quot;&gt;&lt;pre class=&quot;language-ruby&quot;&gt;&lt;code class=&quot;language-ruby&quot;&gt;  &lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;PagesController&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;ApplicationController&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;token method-definition&quot;&gt;&lt;span class=&quot;token function&quot;&gt;letsencrypt&lt;/span&gt;&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;# use your code here, not mine&lt;/span&gt;
+      render text&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;ya6k1edW38z-your-value-here&quot;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now deploy your app on heroku, then continue the letsencrypt workflow. An automated agent will hit your server with your domain name just to verify that you own it. The challenge above needs to be returned.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;IMPORTANT NOTES:
+ - Congratulations! Your certificate and chain have been saved at
+   /etc/letsencrypt/live/www.example.com/fullchain.pem. Your cert will
+   expire on 2016-04-11. To obtain a new version of the certificate in
+   the futureundefined simply run Let&amp;#39;s Encrypt again.&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;All your certs will live in /etc/letsencrypt/live/www.example.com/*.pem, this directory should be centralized and backed up.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;# upload certs to the mothership
+$&amp;gt; sudo heroku certs:add /etc/letsencrypt/live/www.example.com/fullchain.pem&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;$&amp;gt; curl -vI https://www.example.com
+
+# boom.&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;When you need to upgrade the cert.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;sudo letsencrypt certonly --manual -d www.example.com&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Free certs for all your domains, no $35/mo issues.&lt;/p&gt;
+&lt;p&gt;When you need to update the cert to match new subdomains&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;sudo letsencrypt certonly --expand -d www.example.com&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content:encoded></item><item><title><![CDATA[Trigger Lambda on Instance Termination.]]></title><description><![CDATA[Introduction So going on call, we had autoscaling groups that will terminate instances when they fail ELB health checks.
+By the time that we…]]></description><link>https://nickma.com/2016/07/11/trigger-lambda-on-instance-termination</link><guid isPermaLink="false">https://nickma.com/2016/07/11/trigger-lambda-on-instance-termination</guid><pubDate>Mon, 11 Jul 2016 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;So going on call, we had autoscaling groups that will terminate instances when they fail ELB health checks.
+By the time that we got to the instances, they were already terminated and we have no access to the logs.&lt;/p&gt;
+&lt;p&gt;My ideal solution would be to find time to setup the Elasticsearch LogStash Kibana (ELK) stack. Though since,
+the company only had 15 developers and only 2 of them know how the infrastructure works. The idea won’t get much
+traction. For a working ELK come to fruition we needed to pull hours of research outside of working hours
+without support.
+This wasn’t something I wanted to do, since it will affect my ability to do actual assigned work, as much as it pains
+me, I need to get things done and clear time to pursue other options.&lt;/p&gt;
+&lt;p&gt;So for the simplest thing that gets 80 percent of the results, I used a SNS triggered lambda function to scrap all
+logs for terminating instances. This is done through the use of AWS Autoscaling’s Lifecycle hooks.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://docs.aws.amazon.com/autoscaling/latest/userguide/images/lifecycle_hooks.png&quot; alt=&quot;lifecycle-hooks&quot;&gt;&lt;/p&gt;
+&lt;p&gt;For every AutoScaling Group, there are listeners on these event hooks that can be used to program in behaviour.
+In my example I setup a termination hook on the Cloudformation containing all my AutoScaling Groups.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;json&quot;&gt;&lt;pre class=&quot;language-json&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;Group1LifeCycleTerminationHook&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;Type&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;AWS::AutoScaling::LifecycleHook&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;Properties&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;AutoScalingGroupName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;Ref&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Group1ServerGroup&quot;&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;HeartbeatTimeout&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;240&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;LifecycleTransition&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;autoscaling:EC2_INSTANCE_TERMINATING&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;NotificationTargetARN&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;Ref&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;TerminationHookSNSTopic&quot;&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;RoleARN&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;Ref&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;TerminationHookRole&quot;&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;You can setup the LifeCycle through the
+&lt;a href=&quot;http://docs.aws.amazon.com/cli/latest/reference/autoscaling/put-lifecycle-hook.html&quot;&gt;CLI&lt;/a&gt;&lt;br&gt;
+as well, but there is no UI for this feature during the writing of this blog post.&lt;/p&gt;
+&lt;p&gt;This function is then scheduled to trigger an
+&lt;a href=&quot;http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/install-ssm-agent.html&quot;&gt;AWS SSM agent&lt;/a&gt; script to scrape all my logs.
+on my cluster of servers. Essentially, this agent awaits commands from the AWS SSM scheduler and executes preapproved
+scripts on the specific set of EC2 machines.&lt;/p&gt;
+&lt;p&gt;On each of my server provisioners on CloudFormation, I added the ssm-agent bootstrap script. So that the servers
+respond to SSM requests.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;json&quot;&gt;&lt;pre class=&quot;language-json&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;/opt/ssm/install-ssm-agent.sh&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;content&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;Fn::Join&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+        &lt;span class=&quot;token string&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+          &lt;span class=&quot;token string&quot;&gt;&quot;#!/bin/bash\n&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          &lt;span class=&quot;token string&quot;&gt;&quot;cd /tmp\n&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          &lt;span class=&quot;token string&quot;&gt;&quot;curl https://amazon-ssm-&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;token property&quot;&gt;&quot;Ref&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;AWS::Region&quot;&lt;/span&gt;
+          &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          &lt;span class=&quot;token string&quot;&gt;&quot;.s3.amazonaws.com/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm\n&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          &lt;span class=&quot;token string&quot;&gt;&quot;yum install -y amazon-ssm-agent.rpm\n&quot;&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;owner&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;root&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;group&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;root&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;mode&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;000755&quot;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;I then setup my SSM Document to perform a task, and upload it to the SSM document store.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;json&quot;&gt;&lt;pre class=&quot;language-json&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;Content&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &quot;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        \&quot;schemaVersion\&quot;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; \&quot;&lt;span class=&quot;token number&quot;&gt;1.2&lt;/span&gt;\&quot;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    \&quot;description\&quot;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; \&quot;Clean up jobs for a terminating instance.\&quot;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    \&quot;parameters\&quot;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    \&quot;runtimeConfig\&quot;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        \&quot;aws&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;runShellScript\&quot;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        \&quot;properties\&quot;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+            \&quot;id\&quot;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; \&quot;&lt;span class=&quot;token number&quot;&gt;0.&lt;/span&gt;aws&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;runShellScript\&quot;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          \&quot;runCommand\&quot;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+                \&quot;echo &apos;===CATALINA.OUT===&apos;\&quot;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+                \&quot;tail -n &lt;span class=&quot;token number&quot;&gt;1000&lt;/span&gt; /var/log/tomcat/catalina.out || &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;\&quot;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+                \&quot;echo &apos;===JETTY.LOGs===&apos;\&quot;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+                \&quot;tail -n &lt;span class=&quot;token number&quot;&gt;1000&lt;/span&gt; /var/log/jetty/`ls /var/log/jetty/ | sort -r | head -n &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;` || &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;\&quot;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+                \&quot;echo &apos;===FREEMEMORY===&apos;\&quot;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+                \&quot;free -m\&quot;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+                \&quot;echo &apos;===DOCKER-INSPECT===&apos;\&quot;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+                \&quot;docker inspect tomcat || &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;\&quot;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+                \&quot;docker inspect jetty || &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;\&quot;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+                \&quot;echo &apos;===FILE DESCRIPTORS===&apos;\&quot;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+                \&quot;lsof | wc -l\&quot;
+                  &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+                &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+            &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&quot;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;Name&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;scrape-terminating-instance-logs&quot;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;aws --profile prod ec2 ssm create-document --content file://scrape-terminating-instance-logs.json --name &lt;span class=&quot;token string&quot;&gt;&quot;scrape-terminating-instance-logs&quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now I trigger the SSM run from my Lambda Method, and setting the SNS notfication as the Lambda Method trigger.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;python&quot;&gt;&lt;pre class=&quot;language-python&quot;&gt;&lt;code class=&quot;language-python&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;from&lt;/span&gt; __future__ &lt;span class=&quot;token keyword&quot;&gt;import&lt;/span&gt; print_function
+
+&lt;span class=&quot;token keyword&quot;&gt;import&lt;/span&gt; json
+
+&lt;span class=&quot;token comment&quot;&gt;# Message Sample&lt;/span&gt;
+&lt;span class=&quot;token triple-quoted-string string&quot;&gt;&apos;&apos;&apos;
+Service: AWS Auto Scaling
+Time: 2016-01-27T15:23:47.581Z
+RequestId: reqid
+LifecycleActionToken: someToken
+AccountId: 123
+AutoScalingGroupName: Group1
+LifecycleHookName: Group1LifeCycleTerminationHook
+EC2InstanceId: i-1ba03992
+LifecycleTransition: autoscaling:EC2_INSTANCE_TERMINATING
+NotificationMetadata: null
+&apos;&apos;&apos;&lt;/span&gt;
+ASG_NAME_KEY&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;AutoScalingGroupName&apos;&lt;/span&gt;
+EC2_INSTANCE_ID_KEY&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;EC2InstanceId&apos;&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;import&lt;/span&gt; boto3
+
+client &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; boto3&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;client&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;ssm&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;lambda_handler&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;event&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; context&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;boto3 version: %s&apos;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;%&lt;/span&gt; boto3&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;__version__&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;#print(&quot;Received event: &quot; + json.dumps(event, indent=2))&lt;/span&gt;
+    message &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; event&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;Records&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;Sns&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;Message&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;message&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+    json_message &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; json&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;loads&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;message&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    asg_name &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; json_message&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;ASG_NAME_KEY&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+    ec2_id &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; json_message&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;EC2_INSTANCE_ID_KEY&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+
+    response &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; client&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;send_command&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+        InstanceIds&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+            ec2_id&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        DocumentName&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;scrape-terminating-instance-logs&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        TimeoutSeconds&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;120&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        Comment&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;scrape log lines and other auditing info&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        Parameters&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        OutputS3BucketName&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;somebucket&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        OutputS3KeyPrefix&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;terminated_instance_logs/&apos;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; asg_name
+    &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;# remove dates that are break json serialization&lt;/span&gt;
+    response&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;Command&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;pop&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;RequestedDateTime&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    response&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;Command&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;pop&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;ExpiresAfter&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;token keyword&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;response&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; response&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The above lambda method will trigger the SSM function every time an event occurs, it can also be updated to trigger
+any clean up function needed.&lt;/p&gt;
+&lt;p&gt;If you read the above lambda method, you will notice that I set the SSM client to output the results to a s3 bucket,
+this bucket can then be accessed anytime to read the last bit of logs prior to the instance terminating.&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Vim Save as Sudo]]></title><description><![CDATA[Have you ever had one of those days where you were trying to edit a config file and you realized that you were not
+sudo? Vim-Save Vim-Save…]]></description><link>https://nickma.com/2016/07/07/vim-save-as-sudo</link><guid isPermaLink="false">https://nickma.com/2016/07/07/vim-save-as-sudo</guid><pubDate>Thu, 07 Jul 2016 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;Have you ever had one of those days where you were trying to edit a config file and you realized that you were not
+sudo?&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://s3-us-west-2.amazonaws.com/nickma.com/vim-save.png&quot; alt=&quot;Vim-Save&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://s3-us-west-2.amazonaws.com/nickma.com/vim-save2.png&quot; alt=&quot;Vim-Save2&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://s3-us-west-2.amazonaws.com/nickma.com/vim-save3.png&quot; alt=&quot;Vim-Save3&quot;&gt;&lt;/p&gt;
+&lt;p&gt;Well recently I just picked up a trick from a seasoned systems admin where you can enforce your will upon the file.
+Instead of exiting and re-editting as sudo.&lt;/p&gt;
+&lt;p&gt;Just run this and you can see that you will be able to force save the config file as root.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;:w &lt;span class=&quot;token operator&quot;&gt;!&lt;/span&gt;sudo &lt;span class=&quot;token function&quot;&gt;tee&lt;/span&gt; %&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;A little about the command:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;# semi-colon to enter vim command mode&lt;/span&gt;
+w &lt;span class=&quot;token comment&quot;&gt;# to write to the file&lt;/span&gt;
+_ &lt;span class=&quot;token comment&quot;&gt;# space&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;!&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;# vim pipe the outputs of previous command&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;# run as sudo&lt;/span&gt;
+_ &lt;span class=&quot;token comment&quot;&gt;# space&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;tee&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;# tee the command&lt;/span&gt;
+_ &lt;span class=&quot;token comment&quot;&gt;# space&lt;/span&gt;
+% &lt;span class=&quot;token comment&quot;&gt;# Vim substitution for the current file&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content:encoded></item><item><title><![CDATA[Thinking about Recursion in Stacks]]></title><description><![CDATA[Recursion is one of the most common topics in interviews. Recursive solutions usually consist of less code than an interative solution (but…]]></description><link>https://nickma.com/2014/12/26/recursion-in-stacks</link><guid isPermaLink="false">https://nickma.com/2014/12/26/recursion-in-stacks</guid><pubDate>Fri, 26 Dec 2014 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;Recursion is one of the most common topics in interviews. Recursive solutions usually consist of less code than an interative solution (but not always).
+One epiphany I had recently while reviewing common recursive problems is that recursion can be thought of in terms of stacks.&lt;/p&gt;
+&lt;p&gt;Lets say that you were asked to perform a postorder traversal on a binary tree. How would you write the code for this? The most common answer will involve recursion:
+Start traversing the tree from the top, first print the value of the current node, then traverse the left most node, then the right most node; if this node is a leaf, then exit the function.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://s3-us-west-2.amazonaws.com/nickma.com/BinaryTree.png&quot; alt=&quot;BinaryTree&quot;&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;python&quot;&gt;&lt;pre class=&quot;language-python&quot;&gt;&lt;code class=&quot;language-python&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;postorder&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;root&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;print&lt;/span&gt; root&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;value
+
+&lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; root&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;left &lt;span class=&quot;token keyword&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;not&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    postorder&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;root&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;left&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; root&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;right &lt;span class=&quot;token keyword&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;not&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    postorder&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;root&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;right&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now if we need to solve the same question, but without using recursion, how would you do it? (this question was actually asking how well can you visualize recursion).
+In a nutshell, when the program starts executing, a certain contiguous section of memory is set aside for the program called the stack. &lt;a href=&quot;http://www.cs.umd.edu/class/sum2003/cmsc311/Notes/Mips/stack.html&quot;&gt;Source&lt;/a&gt;
+To better visualize what recursion is, we need to take a look at the program stack for the above method.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://s3-us-west-2.amazonaws.com/nickma.com/ExecutionStack.png&quot; alt=&quot;ProgramStack&quot;&gt;&lt;/p&gt;
+&lt;p&gt;Everytime a new function is called, it gets added onto this stack, once this method hits a return statement, it gets popped off the stack, and we start executing the last method on the stack.
+A recursive function may be called many times (depending on the height of the tree and etc), this is why you see stack overflow errors since the recursive call doesn’t terminate and use up all the stack memory!&lt;/p&gt;
+&lt;p&gt;If you take a look at the program call stack, the recursive execution is basically using the execution stack to implicitly keep track of the traversal order.
+We can now write a method to iteratively keep track of the traversal order with an explicit stack.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;python&quot;&gt;&lt;pre class=&quot;language-python&quot;&gt;&lt;code class=&quot;language-python&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;postorder&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;root&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;# using a list as a stack&lt;/span&gt;
+stack &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; root &lt;span class=&quot;token keyword&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;not&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+stack&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;append&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;root&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;token keyword&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;stack&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+        node &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; stack&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;pop&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;print&lt;/span&gt; node&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;value
+
+        &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; node&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;right &lt;span class=&quot;token operator&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+            stack&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;append&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;node&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;right&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+        &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; node&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;left &lt;span class=&quot;token operator&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+            stack&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;append&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;node&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;left&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;We create a stack using a python list, and add our root node as the first Node. Then we push onto the stack starting with the right node first. Since our stack is LIFO, we have to make sure our left node is the first on that gets popped off.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;python&quot;&gt;&lt;pre class=&quot;language-python&quot;&gt;&lt;code class=&quot;language-python&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Node&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;**&lt;/span&gt;init&lt;span class=&quot;token operator&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;self&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; value&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; left&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token boolean&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; right&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token boolean&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+        self&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;value &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; value
+        self&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;right &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; right
+        self&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;left &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; left
+
+root &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; Node&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;50&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+root&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;right &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; Node&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;51&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+root&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;left &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; Node&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;18&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; Node&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; Node&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;24&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Here is the quick working code &lt;a href=&quot;http://www.pythontutor.com/visualize.html#code=class+Node%3A%0A++++def+__init__(self,+value,+left%3DNone,+right%3DNone)%3A%0A++++++++self.value+%3D+value%0A++++++++self.right+%3D+right%0A++++++++self.left+%3D+left%0A%0Aroot+%3D+Node(50)%0Aroot.right+%3D+Node(51)%0Aroot.left+%3D+Node(18,+Node(9),+Node(24))%0A%0Adef+postorder(root)%3A%0A++++%23+using+a+list+as+a+stack%0A++++stack+%3D+%5B%5D%0A++++%0A++++if+root+is+not+None%3A%0A++++++++stack.append(root)%0A%0A++++while+len(stack)+!%3D+0%3A%0A++++++++node+%3D+stack.pop()%0A++++++++print+node.value%0A++++++++%0A++++++++if+node.right+!%3D+None%3A%0A++++++++++++stack.append(node.right)%0A++++++++%0A++++++++if+node.left+!%3D+None%3A%0A++++++++++++stack.append(node.left)%0A%0A%0A++++return%0A%0Apostorder(root)&amp;#x26;mode=display&amp;#x26;origin=opt-frontend.js&amp;#x26;cumulative=false&amp;#x26;heapPrimitives=false&amp;#x26;drawParentPointers=false&amp;#x26;textReferences=false&amp;#x26;showOnlyOutputs=false&amp;#x26;py=2&amp;#x26;rawInputLstJSON=%5B%5D&amp;#x26;curInstr=31&quot;&gt;visualization&lt;/a&gt;
+for this problem, start at around step 32 to avoid the tree declaration.&lt;/p&gt;</content:encoded></item></channel></rss>
