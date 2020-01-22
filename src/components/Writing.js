@@ -40,6 +40,8 @@ const PostBodyTagBox = styled(Box)`
   border-top-right-radius: 22px;
   border-bottom-right-radius: 22px;
 
+  position: absolute;
+
   background: linear-gradient(
     180deg,
     ${getColor('brand-primary')} 0,
@@ -66,7 +68,7 @@ const Post = ({ title, text, image, url, date, time }) => (
     borderColor="greyscale-light"
   >
     <Box>
-      <PositionBox position="fixed" top={5} left={-2}>
+      <PositionBox position="relative" top={5} left={-2}>
         <PostTag tagBody={'Medium'} />
       </PositionBox>
       {image && <CoverImage src={image} height="200px" alt={title} />}
