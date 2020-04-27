@@ -167,7 +167,7 @@ const FeaturedWriting = () => (
       return (
         isMediumUserDefined && (
           <Box mb={[4, 5]}>
-            <CardContainer minWidth="100%">
+            <CardContainer minWidth="360px">
               {posts.map(({ Component, ...rest }) => (
                 <Fade right key={rest.id}>
                   <Component {...rest} key={rest.id} />

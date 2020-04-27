@@ -10,7 +10,7 @@ export const PositionBox = styled(Box)(position);
 
 export const Container = styled(Box).attrs({
   px: 4,
-  width: ['100%', '100%', '680px'],
+  width: ['100%', '100%', '960px'],
 })``;
 
 export const Divider = props => (
