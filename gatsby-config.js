@@ -84,7 +84,7 @@ module.exports = {
     {
       resolve: 'gatsby-source-medium-fix',
       options: {
-        username: '@NickMa38',
+        username: '@nicksma',
       },
     },
   ],
