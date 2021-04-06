@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Blog]]></title><description><![CDATA[Nick Ma's blog.]]></description><link>https://nickma.com</link><generator>GatsbyJS</generator><lastBuildDate>Mon, 27 Apr 2020 04:45:56 GMT</lastBuildDate><item><title><![CDATA[Setup SSL on Heroku with letsencrypt and Rails]]></title><description><![CDATA[So this weekend I had some time to help out on a opensource project manage by some awesome Toronto folks. The steps are as follows: figure…]]></description><link>https://nickma.com/2016/11/26/setup-ssl-on-heroku-with-letsencrypt</link><guid isPermaLink="false">https://nickma.com/2016/11/26/setup-ssl-on-heroku-with-letsencrypt</guid><pubDate>Sat, 26 Nov 2016 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;So this weekend I had some time to help out on a opensource project manage by some awesome Toronto folks.&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Blog]]></title><description><![CDATA[Nick Ma's blog.]]></description><link>https://nickma.com</link><generator>GatsbyJS</generator><lastBuildDate>Tue, 06 Apr 2021 03:51:21 GMT</lastBuildDate><item><title><![CDATA[Setup SSL on Heroku with letsencrypt and Rails]]></title><description><![CDATA[So this weekend I had some time to help out on a opensource project manage by some awesome Toronto folks. The steps are as follows: figure…]]></description><link>https://nickma.com/2016/11/26/setup-ssl-on-heroku-with-letsencrypt</link><guid isPermaLink="false">https://nickma.com/2016/11/26/setup-ssl-on-heroku-with-letsencrypt</guid><pubDate>Sat, 26 Nov 2016 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;So this weekend I had some time to help out on a opensource project manage by some awesome Toronto folks.&lt;/p&gt;
 &lt;p&gt;The steps are as follows:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;figure out how to setup the app for SSL or enforce SSL.&lt;/li&gt;
@@ -38,11 +38,11 @@ www.example.me  www.example.me.herokudns.com&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt
  ; &amp;lt;&amp;lt;&amp;gt;&amp;gt; DiG 9.10.3-P4-Ubuntu &amp;lt;&amp;lt;&amp;gt;&amp;gt; www.if-me.org
  ;; global options: +cmd
  ;; Got answer:
- ;; -&amp;gt;&amp;gt;HEADER&amp;lt;&amp;lt;- opcode: QUERYundefined status: NOERRORundefined id: 23689
- ;; flags: qr rd ra; QUERY: 1undefined ANSWER: 3undefined AUTHORITY: 4undefined ADDITIONAL: 1
+ ;; -&amp;gt;&amp;gt;HEADER&amp;lt;&amp;lt;- opcode: QUERY, status: NOERROR, id: 23689
+ ;; flags: qr rd ra; QUERY: 1, ANSWER: 3, AUTHORITY: 4, ADDITIONAL: 1
 
  ;; OPT PSEUDOSECTION:
- ; EDNS: version: 0undefined flags:; udp: 1280
+ ; EDNS: version: 0, flags:; udp: 1280
  ;; QUESTION SECTION:
  ;www.example.org.            IN  A
 
@@ -68,11 +68,11 @@ Then your DNS resolution will now return the correct &lt;code class=&quot;langua
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;; &amp;lt;&amp;lt;&amp;gt;&amp;gt; DiG 9.10.3-P4-Ubuntu &amp;lt;&amp;lt;&amp;gt;&amp;gt; www.example.org
 ;; global options: +cmd
 ;; Got answer:
-;; -&amp;gt;&amp;gt;HEADER&amp;lt;&amp;lt;- opcode: QUERYundefined status: NOERRORundefined id: 43572
-;; flags: qr rd ra; QUERY: 1undefined ANSWER: 9undefined AUTHORITY: 4undefined ADDITIONAL: 1
+;; -&amp;gt;&amp;gt;HEADER&amp;lt;&amp;lt;- opcode: QUERY, status: NOERROR, id: 43572
+;; flags: qr rd ra; QUERY: 1, ANSWER: 9, AUTHORITY: 4, ADDITIONAL: 1
 
 ;; OPT PSEUDOSECTION:
-; EDNS: version: 0undefined flags:; udp: 1280
+; EDNS: version: 0, flags:; udp: 1280
 ;; QUESTION SECTION:
 ;www.example.org.      IN  A
 
@@ -134,15 +134,15 @@ $&amp;gt; sudo letsencrypt certonly  --manual
 Make sure your web server displays the following content at
 http://www.example.com/.well-known/acme-challenge/xxxxxxxxxxxx-yyyy.zzzzzzzzzzzzzzzzzzz before continuing:
 xxxxxxxxxxxx-yyyy.zzzzzzzzzzzzzzzzzzz
-If you don’t have HTTP server configuredundefined you can run the following
+If you don’t have HTTP server configured, you can run the following
 command on the target server (as root):
 mkdir -p /tmp/certbot/public_html/.well-known/acme-challenge
 cd /tmp/certbot/public_html
 printf “%s” Gm35kFLiXnNtKT9OAOG_KPZvqMmYYAZU6DN-QRoGclg.s2I4ZV9Ne2CNtczlqXV9uw1ZdB5OSypG_cIdiuT7BwI &amp;gt; .well-known/acme-challenge/Gm35kFLiXnNtKT9OAOG_KPZvqMmYYAZU6DN-QRoGclg
 # run only once per server:
 $(command -v python2 || command -v python2.7 || command -v python2.6) -c \
-“import BaseHTTPServerundefined SimpleHTTPServer; \
-s = BaseHTTPServer.HTTPServer((‘’undefined 80)undefined SimpleHTTPServer.SimpleHTTPRequestHandler); \
+“import BaseHTTPServer, SimpleHTTPServer; \
+s = BaseHTTPServer.HTTPServer((‘’, 80), SimpleHTTPServer.SimpleHTTPRequestHandler); \
 s.serve_forever()”
 Press ENTER to continue&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;In rails, add these files:&lt;/p&gt;
@@ -160,7 +160,7 @@ get &lt;span class=&quot;token string&quot;&gt;&apos;/.well-known/acme-challenge
  - Congratulations! Your certificate and chain have been saved at
    /etc/letsencrypt/live/www.example.com/fullchain.pem. Your cert will
    expire on 2016-04-11. To obtain a new version of the certificate in
-   the futureundefined simply run Let&amp;#39;s Encrypt again.&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+   the future, simply run Let&amp;#39;s Encrypt again.&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;All your certs will live in /etc/letsencrypt/live/www.example.com/*.pem, this directory should be centralized and backed up.&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;# upload certs to the mothership
 $&amp;gt; sudo heroku certs:add /etc/letsencrypt/live/www.example.com/fullchain.pem&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
@@ -245,7 +245,7 @@ respond to SSM requests.&lt;/p&gt;
         \&quot;aws&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;runShellScript\&quot;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
         \&quot;properties\&quot;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
         &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-            \&quot;id\&quot;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; \&quot;&lt;span class=&quot;token number&quot;&gt;0.&lt;/span&gt;aws&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;runShellScript\&quot;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+            \&quot;id\&quot;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; \&quot;&lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;.aws&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;runShellScript\&quot;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
           \&quot;runCommand\&quot;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
                 \&quot;echo &apos;===CATALINA.OUT===&apos;\&quot;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
                 \&quot;tail -n &lt;span class=&quot;token number&quot;&gt;1000&lt;/span&gt; /var/log/tomcat/catalina.out || &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;\&quot;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
